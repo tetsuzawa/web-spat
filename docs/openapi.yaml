@@ -1,0 +1,220 @@
+openapi: "3.0.3"
+info:
+  title: Web Spat API
+  version: 0.1.0
+servers:
+  - url: https://api.web-spat.tetsuzawa.com/v1
+    description: Main server
+    variables:
+      port:
+        enum:
+          - '443'
+        default: '443'
+paths:
+  /ping:
+    get:
+      operationId: ping
+      summary: Returns "OK"
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain; charset=utf-8:
+              examples: 
+                ping:
+                  value:
+                    "OK"
+  /experiments:
+    get:
+      operationId: listExperiments
+      summary: Returns a list of experiments.
+      description: >
+        Returns alist of experiments. experiment type, conditions.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiments'
+                
+  /experiments/{id}:
+    get:
+      operationId: getExperimentById
+      summary: Represents a experiment by specified ID
+      parameters:
+        - name: id
+          in: path
+          description: Experiment ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/ExperimentMovementDirectionDiscriminationConstantWidth'
+
+  /experiments/{id}/results:
+    post:
+      operationId: registerResultOfExperimentId
+      summary: Register the result of the specified experiment ID
+      parameters:
+        - name: id
+          in: path
+          description: Experiment ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResultMovementDirectionDiscriminationConstantWidth'
+      responses:
+        '201':
+          description: Successful operation
+          
+
+components:
+  schemas:
+  
+    Experiments:
+      type: array
+      items:
+        anyOf:
+          - $ref: '#/components/schemas/ExperimentMovementDirectionDiscriminationConstantWidth'
+          
+    ExperimentMovementDirectionDiscriminationConstantWidth:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1023
+        azimuth:
+          type: integer
+          minimum: 0
+          maximum: 3599
+          description: '0[10^-1 deg] is the front, 900[10^-1 deg] is the right side'
+          example: 450
+        altitude:
+          type: integer
+          minimum: -900
+          maximum: 900
+          description: '0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir'
+          example: 0
+        coordinate_variable:
+          type: string
+          enum: 
+            - 'azimuth'
+            - 'altitude'
+        width:
+          type: integer
+          minimum: 1
+          description: 'width of moving sound [10^-1 deg]'
+          example: 70
+        velocity_range_lower:
+          type: integer
+          minimum: 1
+          example: 50
+        velocity_range_upper:
+          type: integer
+          minimum: 1
+          example: 800
+        velocity_range_step:
+          type: integer
+          minimum: 1
+          example: 50
+        num_trials:
+          type: integer
+          minimum: 1
+          example: 100
+        status:
+          type: string
+          enum:
+            - 'active'
+            - 'inactive'
+      required:
+        - id
+        - name
+        - description
+        - azimuth
+        - altitude
+        - coordinate_variable
+        - width
+        - velocity_range_lower
+        - velocity_range_upper
+        - velocity_range_step
+        - num_trials
+        - status
+        
+    ResultMovementDirectionDiscriminationConstantWidth:
+      type: object
+      properties:
+        experiment_id:
+          type: integer
+          format: int64
+        subject:
+          $ref: '#/components/schemas/Subject'
+        estimated_parameters:
+          $ref: '#/components/schemas/EstimatedParameters'
+      required:
+        - experiment_id
+        - subject
+        - estimated_parameters
+
+
+    Subject:
+      type: object
+      properties:
+        sex:
+          type: string
+          enum:
+            - '0'
+            - '1'
+            - '2'
+            - '9'
+          description: >
+            '0: not known, 1: mail, 2: female, 9: not applicable. ISO 5218'
+        age:
+          type: integer
+          minimum: 0
+          maximum: 200
+        deaf_and_hearing_impaired:
+          type: boolean
+          default: false
+      required:
+        - sex
+        - age
+        - deaf_and_hearing_impaired
+    
+    EstimatedParameters:
+      type: object
+      properties:
+        mean:
+          type: number
+          format: double
+        sd:
+          type: number
+          format: double
+        lower_asymptote:
+          type: number
+          format: double
+        lapse_rate:
+          type: number
+          format: double
+      required:
+        - mean
+        - sd
+        - lower_asymptote
+        - lapse_rate
