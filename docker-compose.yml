@@ -10,6 +10,7 @@ services:
       - 3306:3306
     volumes:
       - data-volume:/var/lib/mysql
+      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
 
   migration:
     image: flyway/flyway
