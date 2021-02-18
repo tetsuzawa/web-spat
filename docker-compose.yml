@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: web-spat-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    image: mariadb:10.4
+    ports:
+      - 3306:3306
+    volumes:
+      - data-volume:/var/lib/mysql
+
+  migration:
+    image: flyway/flyway
+    depends_on:
+      - db
+    container_name: web-spat-migration
+    volumes:
+      - ./database/migration/schema:/flyway/sql
+
+  backend:
+    build:
+      context: ./backend
+    command: reflex -r '\.go$$' -s -- sh -c 'go run cmd/api/main.go -port=1991'
+    container_name: web-spat-backend
+    ports:
+      - 1991:1991
+    volumes:
+      - ./backend:/app
+    working_dir: /app
+
+volumes:
+  data-volume:
