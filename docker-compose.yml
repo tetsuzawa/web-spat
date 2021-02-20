@@ -23,10 +23,12 @@ services:
   backend:
     build:
       context: ./backend
-    command: reflex -r '\.go$$' -s -- sh -c 'go run cmd/api/main.go -port=1991'
+    command: reflex -r '\.go$$' -s -- sh -c 'go run main.go -port=1991'
     container_name: web-spat-backend
     ports:
       - 1991:1991
+    environment:
+      - BUILD_ENV=Debug
     volumes:
       - ./backend:/app
     working_dir: /app

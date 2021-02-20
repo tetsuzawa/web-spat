@@ -1,15 +1,19 @@
-DBNAME:=web_spat
 # https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds
-DOCKER_DNS:=db
-FLYWAY_CONF?=-url=jdbc:mysql://$(DOCKER_DNS):3306/$(DBNAME) -user=root -password=password
+DOCKER_DB_DNS:=db
 
-export DATABASE_DATASOURCE:=root:password@tcp($(DOCKER_DNS):3306)/$(DBNAME)?parseTime=true&time_zone=%27Asia%2FTokyo%27&loc=Local
+DB_USER:=root
+DB_PASSWORD:=password
+DB_HOST:=$(DOCKER_DB_DNS)
+DB_PORT:=3306
+DB_NAME:=web_spat
+
+FLYWAY_CONF?=-url=jdbc:mariadb://$(DOCKER_DB_DNS):$(DB_PORT)/$(DB_NAME) -user=$(DB_USER) -password=$(DB_PASSWORD)
 
 docker-compose/build:
 	docker-compose build
 
 docker-compose/up:
-	docker-compose up
+	docker-compose up -d
 
 docker-compose/up/service:
 	docker-compose up $(service)
@@ -21,18 +25,18 @@ docker-compose/logs:
 	docker-compose logs -f
 
 DB_SERVICE:=db
-mysql/client:
-	docker-compose exec $(DB_SERVICE) mysql -uroot -hlocalhost -ppassword $(DBNAME)
+mariadb/client:
+	docker-compose exec $(DB_SERVICE) mysql -u $(DB_USER) -h localhost -p $(DB_PASSWORD) $(DB_NAME)
 
-mysql/init:
+mariadb/init:
 	docker-compose exec $(DB_SERVICE) \
-		mysql -u root -h localhost -ppassword \
-		-e "create database \`$(DBNAME)\`"
+		mysql -u $(DB_USER) -h localhost -p$(DB_PASSWORD) \
+		-e "create database \`$(DB_NAME)\`"
 
-__mysql/drop:
+__mariadb/drop:
 	docker-compose exec $(DB_SERVICE) \
-		mysql -u root -h localhost -ppassword \
-		-e "drop database \`$(DBNAME)\`"
+		mysql -u $(DB_USER) -h localhost -p$(DB_PASSWORD) \
+		-e "drop database \`$(DB_NAME)\`"
 
 MIGRATION_SERVICE:=migration
 flyway/info:
@@ -52,4 +56,9 @@ flyway/baseline:
 
 __flyway/clean:
 	docker-compose run --rm $(MIGRATION_SERVICE) $(FLYWAY_CONF) clean
+
+
+BACKEND_SERVICE:=backend
+backend/shell:
+	docker-compose exec $(BACKEND_SERVICE) bash
 
