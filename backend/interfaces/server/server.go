@@ -62,7 +62,8 @@ func (s *Server) Route() *echo.Echo {
 	e.Use(middleware.CORS())
 
 	// Routes
-	e.GET("/ping", handler.Ping)
+	v1 := e.Group("/v1")
+	v1.GET("/ping", handler.Ping)
 
 	return e
 }
