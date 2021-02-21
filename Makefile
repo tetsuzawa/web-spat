@@ -62,3 +62,9 @@ BACKEND_SERVICE:=backend
 backend/shell:
 	docker-compose exec $(BACKEND_SERVICE) bash
 
+
+openapi/gen/backend:
+	@mkdir -p ./backend/interfaces/server/gen
+	oapi-codegen -generate "types" docs/openapi.yaml > ./backend/interfaces/server/gen/types.gen.go
+	oapi-codegen -generate "server" docs/openapi.yaml > ./backend/interfaces/server/gen/server.gen.go
+	oapi-codegen -generate "spec" docs/openapi.yaml > ./backend/interfaces/server/gen/spec.gen.go
