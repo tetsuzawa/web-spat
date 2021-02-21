@@ -6,6 +6,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Ping(c echo.Context) error {
-	return c.String(http.StatusOK, "OK")
+type UtilHandler struct{}
+
+func NewUtilHandler() *UtilHandler {
+	return &UtilHandler{}
+}
+
+// Ping returns "OK"
+// (GET /ping)
+func (h *UtilHandler) Ping(ctx echo.Context) error {
+	return ctx.String(http.StatusOK, "OK")
 }
