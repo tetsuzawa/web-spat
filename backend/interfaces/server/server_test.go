@@ -11,6 +11,8 @@ import (
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3filter"
+	"github.com/tetsuzawa/web-spat/interfaces/server/handler"
+	openapi "github.com/tetsuzawa/web-spat/interfaces/server/openapi"
 )
 
 func TestServer_Run(t *testing.T) {
@@ -31,6 +33,11 @@ func TestServer_Run(t *testing.T) {
 			args:    args{method: http.MethodGet, url: "/ping", body: nil},
 			wantErr: false,
 		},
+		{
+			name:    "listExperiments",
+			args:    args{method: http.MethodGet, url: "/experiments", body: nil},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -47,11 +54,14 @@ func TestServer_Run(t *testing.T) {
 }
 
 func HelperTestRequest(t *testing.T, request *http.Request) error {
-	s := NewServer()
-	if err := s.Init(); err != nil {
-		return fmt.Errorf("failed to init server -> %w", err)
-	}
-	ts := httptest.NewServer(s.e)
+	// routing
+	e := NewRouter()
+	h := handler.NewIntegratedHandler(
+		*handler.NewExperimentsHandler(),
+		*handler.NewUtilHandler(),
+	)
+	openapi.RegisterHandlersWithBaseURL(e, h, "/v1")
+	ts := httptest.NewServer(e)
 	defer ts.Close()
 
 	openAPIRouter := openapi3filter.NewRouter().WithSwaggerFromFile("../../../docs/openapi.yaml")
