@@ -10,6 +10,13 @@ servers:
         enum:
           - '443'
         default: '443'
+  - url: http://localhost:1991/v1
+    description: Dev server
+    variables:
+      port:
+        enum:
+          - '1991'
+        default: '1991'
 paths:
   /ping:
     get:
@@ -19,7 +26,7 @@ paths:
         '200':
           description: OK
           content:
-            text/plain; charset=utf-8:
+            text/plain; charset=UTF-8:
               examples: 
                 ping:
                   value:
