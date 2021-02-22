@@ -5,6 +5,7 @@ package domain
 type ExperimentName string
 
 // NewExperimentName generates ExperimentName.
+// If the length of the argument is too long, it returns ErrTooLongExperimentName.
 func NewExperimentName(v string) (ExperimentName, error) {
 	if len(v) > 64 {
 		return "", ErrTooLongExperimentName
@@ -17,6 +18,7 @@ func NewExperimentName(v string) (ExperimentName, error) {
 type ExperimentDescription string
 
 // NewExperimentDescription generates ExperimentDescription.
+// If the length of the argument is too long, it returns ErrTooLongExperimentDescription.
 func NewExperimentDescription(v string) (ExperimentDescription, error) {
 	if len(v) > 1024 {
 		return "", ErrTooLongExperimentDescription
