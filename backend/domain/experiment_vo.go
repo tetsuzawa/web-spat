@@ -25,3 +25,17 @@ func NewExperimentDescription(v string) (ExperimentDescription, error) {
 	}
 	return ExperimentDescription(v), nil
 }
+
+// Azimuth is the horizontal angle.
+// 0[10^-1 deg] is the front, 900[10^-1 deg] is the right side,
+// 1800[10^-1 deg] is the behind and 2700[10^-1 deg] is the left side.
+type Azimuth uint64
+
+// NewAzimuth generates Azimuth.
+// If the value of argument is invalid, it returns ErrInvalidAzimuthValue.
+func NewAzimuth(v uint64) (Azimuth, error) {
+	if v >= 3600 {
+		return 0, ErrInvalidAzimuthValue
+	}
+	return Azimuth(v), nil
+}
