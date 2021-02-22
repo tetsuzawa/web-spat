@@ -27,28 +27,28 @@ paths:
           description: OK
           content:
             text/plain; charset=UTF-8:
-              examples: 
+              examples:
                 ping:
                   value:
                     "OK"
-  /experiments:
+  /experiment/mddcw:
     get:
-      operationId: listExperiments
+      operationId: listExperimentsMDDCW
       summary: Returns a list of experiments.
-      description: >
-        Returns alist of experiments. experiment type, conditions.
+      description: Returns a list of experiments. The experimet type is Movement Direction Discrimination Constant Width.
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Experiments'
-                
-  /experiments/{id}:
+                $ref: '#/components/schemas/ExperimentsMDDCW'
+
+  /experiment/mddcw/{id}:
     get:
-      operationId: getExperimentById
-      summary: Represents a experiment by specified ID
+      operationId: getExperimentMDDCWById
+      summary: Represents a experiment by specified ID.
+      description: Represents a experiment by specified ID. The experimet type is Movement Direction Discrimination Constant Width.
       parameters:
         - name: id
           in: path
@@ -62,13 +62,13 @@ paths:
           content:
             application/json:
               schema:
-                anyOf:
-                  - $ref: '#/components/schemas/ExperimentMovementDirectionDiscriminationConstantWidth'
+                $ref: '#/components/schemas/ExperimentMDDCW'
 
-  /experiments/{id}/results:
+  /experiments/mddcw/{id}/results:
     post:
-      operationId: registerResultOfExperimentId
-      summary: Register the result of the specified experiment ID
+      operationId: registerResultOfExperimentMDDCWById
+      summary: Register the result of the specified experiment ID.
+      description: Register the result of the specified experiment ID. The experimet type is Movement Direction Discrimination Constant Width.
       parameters:
         - name: id
           in: path
@@ -81,22 +81,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResultMovementDirectionDiscriminationConstantWidth'
+              $ref: '#/components/schemas/ResultMDDCW'
       responses:
         '201':
           description: Successful operation
-          
+
 
 components:
   schemas:
-  
-    Experiments:
+
+    ExperimentsMDDCW:
+      description: Experiments for Movement Direction Discrimination Constant Width
       type: array
       items:
-        anyOf:
-          - $ref: '#/components/schemas/ExperimentMovementDirectionDiscriminationConstantWidth'
-          
-    ExperimentMovementDirectionDiscriminationConstantWidth:
+        $ref: '#/components/schemas/ExperimentMDDCW'
+
+    ExperimentMDDCW:
+      description: Experiment for Movement Direction Discrimination Constant Width
       type: object
       properties:
         id:
@@ -122,7 +123,7 @@ components:
           example: 0
         coordinate_variable:
           type: string
-          enum: 
+          enum:
             - 'azimuth'
             - 'altitude'
         width:
@@ -164,8 +165,9 @@ components:
         - velocity_range_step
         - num_trials
         - status
-        
-    ResultMovementDirectionDiscriminationConstantWidth:
+
+    ResultMDDCW:
+      description: Result of Movement Direction Discrimination Constant Width
       type: object
       properties:
         experiment_id:
@@ -204,7 +206,7 @@ components:
         - sex
         - age
         - deaf_and_hearing_impaired
-    
+
     EstimatedParameters:
       type: object
       properties:

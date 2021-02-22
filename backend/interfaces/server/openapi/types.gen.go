@@ -11,8 +11,8 @@ type EstimatedParameters struct {
 	Sd             float64 `json:"sd"`
 }
 
-// ExperimentMovementDirectionDiscriminationConstantWidth defines model for ExperimentMovementDirectionDiscriminationConstantWidth.
-type ExperimentMovementDirectionDiscriminationConstantWidth struct {
+// ExperimentMDDCW defines model for ExperimentMDDCW.
+type ExperimentMDDCW struct {
 
 	// 0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir
 	Altitude int `json:"altitude"`
@@ -33,11 +33,11 @@ type ExperimentMovementDirectionDiscriminationConstantWidth struct {
 	Width int `json:"width"`
 }
 
-// Experiments defines model for Experiments.
-type Experiments []interface{}
+// ExperimentsMDDCW defines model for ExperimentsMDDCW.
+type ExperimentsMDDCW []ExperimentMDDCW
 
-// ResultMovementDirectionDiscriminationConstantWidth defines model for ResultMovementDirectionDiscriminationConstantWidth.
-type ResultMovementDirectionDiscriminationConstantWidth struct {
+// ResultMDDCW defines model for ResultMDDCW.
+type ResultMDDCW struct {
 	EstimatedParameters EstimatedParameters `json:"estimated_parameters"`
 	ExperimentId        int64               `json:"experiment_id"`
 	Subject             Subject             `json:"subject"`
@@ -52,8 +52,9 @@ type Subject struct {
 	Sex string `json:"sex"`
 }
 
-// RegisterResultOfExperimentIdJSONBody defines parameters for RegisterResultOfExperimentId.
-type RegisterResultOfExperimentIdJSONBody ResultMovementDirectionDiscriminationConstantWidth
+// RegisterResultOfExperimentMDDCWByIdJSONBody defines parameters for RegisterResultOfExperimentMDDCWById.
+type RegisterResultOfExperimentMDDCWByIdJSONBody ResultMDDCW
 
-// RegisterResultOfExperimentIdJSONRequestBody defines body for RegisterResultOfExperimentId for application/json ContentType.
-type RegisterResultOfExperimentIdJSONRequestBody RegisterResultOfExperimentIdJSONBody
+// RegisterResultOfExperimentMDDCWByIdJSONRequestBody defines body for RegisterResultOfExperimentMDDCWById for application/json ContentType.
+type RegisterResultOfExperimentMDDCWByIdJSONRequestBody RegisterResultOfExperimentMDDCWByIdJSONBody
+

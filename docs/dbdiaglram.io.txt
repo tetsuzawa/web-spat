@@ -13,9 +13,9 @@ Project web_spat {
 
 
 // result, NormCDF
-Table result_movement_direction_discrimination_constant_width {
+Table result_mddcw {
   id int [pk, increment]
-  experiment_id int [not null, ref: > experiment.id]
+  experiment_id int [not null, ref: > result_mddcw.id]
   result_url text [not null]
   subject_id int [not null, ref: > subject.id]
   mean double [not null]
@@ -26,7 +26,7 @@ Table result_movement_direction_discrimination_constant_width {
 }
 
 // // result, NormCDF
-// Table result_movement_direction_discrimination_constant_velocity {
+// Table result_mddcv {
 //   id int [pk, increment]
 //   experiment_id int [not null, ref: > EMW.id]
 //   questplus_parameter_normcdf_id int [not null, ref: > questplus_parameter_normcdf.id]
@@ -36,26 +36,26 @@ Table result_movement_direction_discrimination_constant_width {
 //   lapse_rate double [not null]
 // }
 
-Table experiment {
+Table experiment_mddcw {
   id int [pk, increment]
   created_at timestamp [not null, default: `now()`]
 }
 
-Table experiment_active {
+Table experiment_mddcw_active {
   id int [pk, increment]
-  experiment_id int [not null, unique, ref: - experiment.id]
+  experiment_id int [not null, unique, ref: - result_mddcw.id]
   created_at timestamp [not null, default: `now()`]
 }
 
-Table experiment_inactive {
+Table experiment_mddcw_inactive {
   id int [pk, increment]
-  experiment_id int [not null, unique, ref: - experiment.id]
+  experiment_id int [not null, unique, ref: - result_mddcw.id]
   created_at timestamp [not null, default: `now()`]
 }
 
-Table experiment_movement_direction_discrimination_constant_width{
+Table experiment_mddcw_detail{
   id int [pk, increment]
-  experiment_id int [not null, unique, ref: - experiment.id]
+  experiment_id int [not null, unique, ref: - result_mddcw.id]
   questplus_parameter_normcdf_id int [not null, ref: > questplus_parameter_normcdf.id]
   name string [not null, unique]
   description string [not null]
@@ -70,7 +70,7 @@ Table experiment_movement_direction_discrimination_constant_width{
   created_at timestamp [not null, default: `now()`]
 }
 
-// Table experiment_movement_direction_discrimination_constant_velocity as EMV{
+// Table experiment_mddcv as EMV{
 //   id int [pk, increment]
 //   name string [not null, unique]
 //   description string [not null]

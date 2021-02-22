@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `result_movement_direction_discrimination_constant_width`
+CREATE TABLE IF NOT EXISTS `result_mddcw`
 (
     `id`              INT PRIMARY KEY AUTO_INCREMENT,
     `experiment_id`   INT       NOT NULL,
@@ -11,27 +11,27 @@ CREATE TABLE IF NOT EXISTS `result_movement_direction_discrimination_constant_wi
     `created_at`      TIMESTAMP NOT NULL DEFAULT (now())
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `experiment`
+CREATE TABLE IF NOT EXISTS `experiment_mddcw`
 (
     `id`         INT PRIMARY KEY AUTO_INCREMENT,
     `created_at` TIMESTAMP NOT NULL DEFAULT (now())
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `experiment_active`
+CREATE TABLE IF NOT EXISTS `experiment_mddcw_active`
 (
     `id`            INT PRIMARY KEY AUTO_INCREMENT,
     `experiment_id` INT UNIQUE NOT NULL,
     `created_at`    TIMESTAMP  NOT NULL DEFAULT (now())
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `experiment_inactive`
+CREATE TABLE IF NOT EXISTS `experiment_mddcw_inactive`
 (
     `id`            INT PRIMARY KEY AUTO_INCREMENT,
     `experiment_id` INT UNIQUE NOT NULL,
     `created_at`    TIMESTAMP  NOT NULL DEFAULT (now())
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `experiment_movement_direction_discrimination_constant_width`
+CREATE TABLE IF NOT EXISTS `experiment_mddcw_detail`
 (
     `id`                             INT PRIMARY KEY AUTO_INCREMENT,
     `experiment_id`                  INT UNIQUE         NOT NULL,
@@ -72,23 +72,23 @@ CREATE TABLE IF NOT EXISTS `subject`
     `created_at`                TIMESTAMP    NOT NULL DEFAULT (now())
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `result_movement_direction_discrimination_constant_width`
-    ADD FOREIGN KEY (`experiment_id`) REFERENCES `experiment` (`id`);
+ALTER TABLE `result_mddcw`
+    ADD FOREIGN KEY (`experiment_id`) REFERENCES `experiment_mddcw` (`id`);
 
-ALTER TABLE `result_movement_direction_discrimination_constant_width`
+ALTER TABLE `result_mddcw`
     ADD FOREIGN KEY (`subject_id`) REFERENCES `subject` (`id`);
 
-ALTER TABLE `experiment_active`
-    ADD FOREIGN KEY (`experiment_id`) REFERENCES `experiment` (`id`);
+ALTER TABLE `experiment_mddcw_active`
+    ADD FOREIGN KEY (`experiment_id`) REFERENCES `experiment_mddcw` (`id`);
 
-ALTER TABLE `experiment_inactive`
-    ADD FOREIGN KEY (`experiment_id`) REFERENCES `experiment` (`id`);
+ALTER TABLE `experiment_mddcw_inactive`
+    ADD FOREIGN KEY (`experiment_id`) REFERENCES `experiment_mddcw` (`id`);
 
-ALTER TABLE `experiment_movement_direction_discrimination_constant_width`
-    ADD FOREIGN KEY (`experiment_id`) REFERENCES `experiment` (`id`);
+ALTER TABLE `experiment_mddcw_detail`
+    ADD FOREIGN KEY (`experiment_id`) REFERENCES `experiment_mddcw` (`id`);
 
-ALTER TABLE `experiment_movement_direction_discrimination_constant_width`
+ALTER TABLE `experiment_mddcw_detail`
     ADD FOREIGN KEY (`questplus_parameter_normcdf_id`) REFERENCES `questplus_parameter_normcdf` (`id`);
 
-ALTER TABLE `experiment_movement_direction_discrimination_constant_width`
+ALTER TABLE `experiment_mddcw_detail`
     ADD FOREIGN KEY (`coordinate_variable_id`) REFERENCES `m_coordinate_variable` (`id`);

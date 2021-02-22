@@ -14,14 +14,14 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Returns a list of experiments.
-	// (GET /experiments)
-	ListExperiments(ctx echo.Context) error
-	// Represents a experiment by specified ID
-	// (GET /experiments/{id})
-	GetExperimentById(ctx echo.Context, id int) error
-	// Register the result of the specified experiment ID
-	// (POST /experiments/{id}/results)
-	RegisterResultOfExperimentId(ctx echo.Context, id int) error
+	// (GET /experiment/mddcw)
+	ListExperimentsMDDCW(ctx echo.Context) error
+	// Represents a experiment by specified ID.
+	// (GET /experiment/mddcw/{id})
+	GetExperimentMDDCWById(ctx echo.Context, id int) error
+	// Register the result of the specified experiment ID.
+	// (POST /experiments/mddcw/{id}/results)
+	RegisterResultOfExperimentMDDCWById(ctx echo.Context, id int) error
 	// Returns "OK"
 	// (GET /ping)
 	Ping(ctx echo.Context) error
@@ -32,17 +32,17 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// ListExperiments converts echo context to params.
-func (w *ServerInterfaceWrapper) ListExperiments(ctx echo.Context) error {
+// ListExperimentsMDDCW converts echo context to params.
+func (w *ServerInterfaceWrapper) ListExperimentsMDDCW(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.ListExperiments(ctx)
+	err = w.Handler.ListExperimentsMDDCW(ctx)
 	return err
 }
 
-// GetExperimentById converts echo context to params.
-func (w *ServerInterfaceWrapper) GetExperimentById(ctx echo.Context) error {
+// GetExperimentMDDCWById converts echo context to params.
+func (w *ServerInterfaceWrapper) GetExperimentMDDCWById(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id int
@@ -53,12 +53,12 @@ func (w *ServerInterfaceWrapper) GetExperimentById(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetExperimentById(ctx, id)
+	err = w.Handler.GetExperimentMDDCWById(ctx, id)
 	return err
 }
 
-// RegisterResultOfExperimentId converts echo context to params.
-func (w *ServerInterfaceWrapper) RegisterResultOfExperimentId(ctx echo.Context) error {
+// RegisterResultOfExperimentMDDCWById converts echo context to params.
+func (w *ServerInterfaceWrapper) RegisterResultOfExperimentMDDCWById(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id int
@@ -69,7 +69,7 @@ func (w *ServerInterfaceWrapper) RegisterResultOfExperimentId(ctx echo.Context) 
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.RegisterResultOfExperimentId(ctx, id)
+	err = w.Handler.RegisterResultOfExperimentMDDCWById(ctx, id)
 	return err
 }
 
@@ -110,9 +110,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/experiments", wrapper.ListExperiments)
-	router.GET(baseURL+"/experiments/:id", wrapper.GetExperimentById)
-	router.POST(baseURL+"/experiments/:id/results", wrapper.RegisterResultOfExperimentId)
+	router.GET(baseURL+"/experiment/mddcw", wrapper.ListExperimentsMDDCW)
+	router.GET(baseURL+"/experiment/mddcw/:id", wrapper.GetExperimentMDDCWById)
+	router.POST(baseURL+"/experiments/mddcw/:id/results", wrapper.RegisterResultOfExperimentMDDCWById)
 	router.GET(baseURL+"/ping", wrapper.Ping)
 
 }
+
