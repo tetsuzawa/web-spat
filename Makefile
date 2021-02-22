@@ -26,7 +26,7 @@ docker-compose/logs:
 
 DB_SERVICE:=db
 mariadb/client:
-	docker-compose exec $(DB_SERVICE) mysql -u $(DB_USER) -h localhost -p $(DB_PASSWORD) $(DB_NAME)
+	docker-compose exec $(DB_SERVICE) mysql -u$(DB_USER) -hlocalhost -p$(DB_PASSWORD) $(DB_NAME)
 
 mariadb/init:
 	docker-compose exec $(DB_SERVICE) \
@@ -64,7 +64,7 @@ backend/shell:
 
 
 openapi/gen/backend:
-	@mkdir -p ./backend/interfaces/server/gen
-	oapi-codegen -generate "types" docs/openapi.yaml > ./backend/interfaces/server/gen/types.gen.go
-	oapi-codegen -generate "server" docs/openapi.yaml > ./backend/interfaces/server/gen/server.gen.go
-	oapi-codegen -generate "spec" docs/openapi.yaml > ./backend/interfaces/server/gen/spec.gen.go
+	@mkdir -p ./backend/interfaces/server/openapi
+	oapi-codegen -generate "types" docs/openapi.yaml > ./backend/interfaces/server/openapi/types.gen.go
+	oapi-codegen -generate "server" docs/openapi.yaml > ./backend/interfaces/server/openapi/server.gen.go
+	oapi-codegen -generate "spec" docs/openapi.yaml > ./backend/interfaces/server/openapi/spec.gen.go
