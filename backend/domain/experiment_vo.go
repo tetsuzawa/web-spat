@@ -39,3 +39,16 @@ func NewAzimuth(v uint64) (Azimuth, error) {
 	}
 	return Azimuth(v), nil
 }
+
+// Altitude is the vertical angle.
+// 0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir.
+type Altitude int64
+
+// NewAltitude generates Altitude.
+// If the value of argument is invalid, it returns ErrInvalidAltitudeValue.
+func NewAltitude(v uint64) (Altitude, error) {
+	if v >= 3600 {
+		return 0, ErrInvalidAltitudeValue
+	}
+	return Altitude(v), nil
+}

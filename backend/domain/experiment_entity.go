@@ -25,8 +25,8 @@ type ExperimentMDDCWDetail struct {
 	QuestplusParameterNormcdfID int64
 	Name                        ExperimentName
 	Description                 ExperimentDescription
-	Azimuth                     Azimuth // 0[10^-1 deg] is the front, 900[10^-1 deg] is the right side
-	Altitude                    uint64 // 0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir
+	Azimuth                     Azimuth  // 0[10^-1 deg] is the front, 900[10^-1 deg] is the right side
+	Altitude                    Altitude // 0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir
 	CoordinateVariableID        int64
 	Width                       uint64 // [10^-1 deg]
 	VelocityRangeLower          uint64 // [10^-1 deg/sec]
