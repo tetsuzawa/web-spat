@@ -47,7 +47,7 @@ type Altitude int64
 // NewAltitude generates Altitude.
 // If the value of argument is invalid, it returns ErrInvalidAltitudeValue.
 func NewAltitude(v uint64) (Altitude, error) {
-	if v >= 3600 {
+	if v < -900 || 900 < v {
 		return 0, ErrInvalidAltitudeValue
 	}
 	return Altitude(v), nil
