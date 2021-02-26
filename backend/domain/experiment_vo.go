@@ -80,3 +80,36 @@ func NewWidth(v uint64) Width {
 func (v *Width) ToInt() int {
 	return int(*v)
 }
+
+type VelocityRangeLower uint64
+
+// NewVelocityRangeLower generates NewVelocityRangeLower.
+func NewVelocityRangeLower(v uint64) VelocityRangeLower {
+	return VelocityRangeLower(v)
+}
+
+func (v *VelocityRangeLower) ToInt() int {
+	return int(*v)
+}
+
+type VelocityRangeUpper uint64
+
+// NewVelocityRangeUpper generates NewVelocityRangeUpper.
+func NewVelocityRangeUpper(v uint64) VelocityRangeUpper {
+	return VelocityRangeUpper(v)
+}
+
+func (v *VelocityRangeUpper) ToInt() int {
+	return int(*v)
+}
+
+type VelocityRangeStep uint64
+
+// NewVelocityRangeStep generates NewVelocityRangeStep.
+func NewVelocityRangeStep(v uint64) VelocityRangeStep {
+	return VelocityRangeStep(v)
+}
+
+func (v *VelocityRangeStep) ToInt() int {
+	return int(*v)
+}
