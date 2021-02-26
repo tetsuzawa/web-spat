@@ -15,7 +15,7 @@ Project web_spat {
 // result, NormCDF
 Table result_mddcw {
   id int [pk, increment]
-  experiment_id int [not null, ref: > result_mddcw.id]
+  experiment_id int [not null, ref: > experiment_mddcw.id]
   result_url text [not null]
   subject_id int [not null, ref: > subject.id]
   mean double [not null]
@@ -43,19 +43,19 @@ Table experiment_mddcw {
 
 Table experiment_mddcw_active {
   id int [pk, increment]
-  experiment_id int [not null, unique, ref: - result_mddcw.id]
+  experiment_id int [not null, unique, ref: - experiment_mddcw.id]
   created_at timestamp [not null, default: `now()`]
 }
 
 Table experiment_mddcw_inactive {
   id int [pk, increment]
-  experiment_id int [not null, unique, ref: - result_mddcw.id]
+  experiment_id int [not null, unique, ref: - experiment_mddcw.id]
   created_at timestamp [not null, default: `now()`]
 }
 
 Table experiment_mddcw_detail{
   id int [pk, increment]
-  experiment_id int [not null, unique, ref: - result_mddcw.id]
+  experiment_id int [not null, unique, ref: - experiment_mddcw.id]
   questplus_parameter_normcdf_id int [not null, ref: > questplus_parameter_normcdf.id]
   name string [not null, unique]
   description string [not null]
