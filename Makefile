@@ -65,6 +65,6 @@ backend/shell:
 
 openapi/gen/backend:
 	@mkdir -p ./backend/interfaces/server/openapi
-	oapi-codegen -generate "types" docs/openapi.yaml > ./backend/interfaces/server/openapi/types.gen.go
-	oapi-codegen -generate "server" docs/openapi.yaml > ./backend/interfaces/server/openapi/server.gen.go
-	oapi-codegen -generate "spec" docs/openapi.yaml > ./backend/interfaces/server/openapi/spec.gen.go
+	oapi-codegen -package openapi -generate types docs/openapi.yaml > ./backend/interfaces/server/openapi/types.gen.go
+	oapi-codegen -package openapi -generate server docs/openapi.yaml > ./backend/interfaces/server/openapi/server.gen.go
+	oapi-codegen -package openapi -generate spec docs/openapi.yaml > ./backend/interfaces/server/openapi/spec.gen.go
