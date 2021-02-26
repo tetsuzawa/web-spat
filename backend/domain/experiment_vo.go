@@ -13,6 +13,10 @@ func NewExperimentName(v string) (ExperimentName, error) {
 	return ExperimentName(v), nil
 }
 
+func (v *ExperimentName) ToString() string {
+	return string(*v)
+}
+
 // ExperimentDescription is description of a experiment.
 // The length must be in 1024 characters.
 type ExperimentDescription string
@@ -24,6 +28,10 @@ func NewExperimentDescription(v string) (ExperimentDescription, error) {
 		return "", ErrTooLongExperimentDescription
 	}
 	return ExperimentDescription(v), nil
+}
+
+func (v *ExperimentDescription) ToString() string {
+	return string(*v)
 }
 
 // Azimuth is the horizontal angle.
@@ -40,6 +48,10 @@ func NewAzimuth(v uint64) (Azimuth, error) {
 	return Azimuth(v), nil
 }
 
+func (v *Azimuth) ToInt() int {
+	return int(*v)
+}
+
 // Altitude is the vertical angle.
 // 0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir.
 type Altitude int64
@@ -51,4 +63,8 @@ func NewAltitude(v uint64) (Altitude, error) {
 		return 0, ErrInvalidAltitudeValue
 	}
 	return Altitude(v), nil
+}
+
+func (v *Altitude) ToInt() int {
+	return int(*v)
 }
