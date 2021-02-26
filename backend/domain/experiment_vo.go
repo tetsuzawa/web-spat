@@ -68,3 +68,15 @@ func NewAltitude(v uint64) (Altitude, error) {
 func (v *Altitude) ToInt() int {
 	return int(*v)
 }
+
+// Width is the width of moving angle.
+type Width uint64
+
+// NewWidth generates Width.
+func NewWidth(v uint64) Width {
+	return Width(v)
+}
+
+func (v *Width) ToInt() int {
+	return int(*v)
+}

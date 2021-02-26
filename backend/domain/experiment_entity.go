@@ -28,7 +28,7 @@ type ExperimentMDDCWDetail struct {
 	Azimuth                     Azimuth  // 0[10^-1 deg] is the front, 900[10^-1 deg] is the right side
 	Altitude                    Altitude // 0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir
 	CoordinateVariableID        int64
-	Width                       uint64 // [10^-1 deg]
+	Width                       Width // [10^-1 deg]
 	VelocityRangeLower          uint64 // [10^-1 deg/sec]
 	VelocityRangeUpper          uint64 // [10^-1 deg/sec]
 	VelocityRangeStep           uint64 // [10^-1 deg/sec]
