@@ -31,11 +31,25 @@ paths:
                 ping:
                   value:
                     "OK"
-  /experiment/mddcw:
+
+  /experiment/mddcw/active:
     get:
-      operationId: listExperimentsMDDCW
-      summary: Returns a list of experiments.
-      description: Returns a list of experiments. The experimet type is Movement Direction Discrimination Constant Width.
+      operationId: listExperimentsMDDCWActive
+      summary: Returns a list of active experiments.
+      description: Returns a list of active experiments. The experimet type is Movement Direction Discrimination Constant Width.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentsMDDCW'
+
+  /experiment/mddcw/inactive:
+    get:
+      operationId: listExperimentsMDDCWInactive
+      summary: Returns a list of inactive experiments.
+      description: Returns a list of inactive experiments. The experimet type is Movement Direction Discrimination Constant Width.
       responses:
         '200':
           description: Successful operation
@@ -64,7 +78,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExperimentMDDCW'
 
-  /experiments/mddcw/{id}/results:
+  /experiment/mddcw/{id}/results:
     post:
       operationId: registerResultOfExperimentMDDCWById
       summary: Register the result of the specified experiment ID.
@@ -147,11 +161,7 @@ components:
           type: integer
           minimum: 1
           example: 100
-        status:
-          type: string
-          enum:
-            - 'active'
-            - 'inactive'
+
       required:
         - id
         - name
@@ -164,7 +174,6 @@ components:
         - velocity_range_upper
         - velocity_range_step
         - num_trials
-        - status
 
     ResultMDDCW:
       description: Result of Movement Direction Discrimination Constant Width
