@@ -32,7 +32,7 @@ type ExperimentMDDCWDetail struct {
 	VelocityRangeLower          VelocityRangeLower // [10^-1 deg/sec]
 	VelocityRangeUpper          VelocityRangeUpper // [10^-1 deg/sec]
 	VelocityRangeStep           VelocityRangeStep // [10^-1 deg/sec]
-	NumTrials                   uint64
+	NumTrials                   NumTrials
 	CreatedAt                   time.Time
 }
 

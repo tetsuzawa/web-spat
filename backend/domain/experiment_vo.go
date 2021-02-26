@@ -113,3 +113,14 @@ func NewVelocityRangeStep(v uint64) VelocityRangeStep {
 func (v *VelocityRangeStep) ToInt() int {
 	return int(*v)
 }
+
+type NumTrials uint64
+
+// NewNumTrials generates NewNumTrials.
+func NewNumTrials(v uint64) NumTrials {
+	return NumTrials(v)
+}
+
+func (v *NumTrials) ToInt() int {
+	return int(*v)
+}
