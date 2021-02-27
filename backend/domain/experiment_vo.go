@@ -165,7 +165,7 @@ type QuestPlusParameterNormCDF struct {
 	OutcomeDomain         OutcomeDomain         `json:"outcome_domain"`
 	Prior                 PriorNormCDF          `json:"prior"`
 	Func                  Func                  `json:"func"`
-	StimScale             StimScase             `json:"stim_scale"`
+	StimScale             StimScale             `json:"stim_scale"`
 	StimSelectionMethod   StimSelectionMethod   `json:"stim_selection_method"`
 	ParamEstimationMethod ParamEstimationMethod `json:"param_estimation_method"`
 }
@@ -175,46 +175,150 @@ type StimDomainNormCDF struct {
 }
 
 type ParamDomainNormCDF struct {
-	Mean           []float64 `json:"mean"`
-	SD             []float64 `json:"sd"`
-	LowerAsymptote []float64 `json:"lower_asymptote"`
-	LapseRate      []float64 `json:"lapse_rate"`
+	Mean           []Mean           `json:"mean"`
+	SD             []SD             `json:"sd"`
+	LowerAsymptote []LowerAsymptote `json:"lower_asymptote"`
+	LapseRate      []LapseRate      `json:"lapse_rate"`
+}
+
+type Mean float64
+
+func NewMean(v float64) Mean {
+	return Mean(v)
+}
+
+type SD float64
+
+func NewSD(v float64) (SD, error) {
+	if v < 0 {
+		return 0, ErrInvalidSDValue
+	}
+	return SD(v), nil
+}
+
+type LowerAsymptote float64
+
+func NewLowerAsymptote(v float64) (LowerAsymptote, error) {
+	if v < 0 || 1 < v {
+		return 0, ErrInvalidLowerAsymptoteValue
+	}
+	return LowerAsymptote(v), nil
+}
+
+type LapseRate float64
+
+func NewLapseRate(v float64) (LapseRate, error) {
+	if v < 0 || 1 < v {
+		return 0, ErrInvalidLapseRateValue
+	}
+	return LapseRate(v), nil
 }
 
 type OutcomeDomain struct {
-	Response struct{} `json:"response"`
+	Response Response `json:"response"`
 }
 
+type Response string
+
+const (
+	ResponseCorrect   = Response("correct")
+	ResponseIncorrect = Response("incorrect")
+)
+
 type PriorNormCDF struct {
-	Mean           []float64 `json:"mean"`
-	SD             []float64 `json:"sd"`
-	LowerAsymptote []float64 `json:"lower_asymptote"`
-	LapseRate      []float64 `json:"lapse_rate"`
+	Mean           []Probability `json:"mean"`
+	SD             []Probability `json:"sd"`
+	LowerAsymptote []Probability `json:"lower_asymptote"`
+	LapseRate      []Probability `json:"lapse_rate"`
+}
+
+type Probability float64
+
+func NewProbability(v float64) (Probability, error) {
+	if v < 0 || 1 > v {
+		return 0, ErrInvalidProbabilityValue
+	}
+	return Probability(v), nil
 }
 
 type Func string
 
 const (
-	NormCDF = Func("norm_cdf")
+	FuncNormCDF = Func("norm_cdf")
 )
 
-type StimScase string
+type StimScale string
 
 const (
-	Linear = StimScase("linear")
-	Log10  = StimScase("log10")
+	StimScaleLinear = StimScale("linear")
+	StimScaleLog10  = StimScale("log10")
 )
 
 type StimSelectionMethod string
 
 const (
-	MinEntropy  = StimSelectionMethod("min_entropy")
-	MinNEntropy = StimSelectionMethod("min_n_entropy")
+	StimSelectionMethodMinEntropy  = StimSelectionMethod("min_entropy")
+	StimSelectionMethodMinNEntropy = StimSelectionMethod("min_n_entropy")
 )
 
 type ParamEstimationMethod string
 
 const (
-	Mode = ParamEstimationMethod("mode")
-	Mean = ParamEstimationMethod("mean")
+	ParamEstimationMethodMode = ParamEstimationMethod("mode")
+	ParamEstimationMethodMean = ParamEstimationMethod("mean")
 )
+
+type QuestPlusResultNormCDF struct {
+	NumTrials                 NumTrials
+	Width                     Width
+	Velocity                  Velocity
+	Azimuth                   Azimuth
+	Altitude                  Altitude
+	ActualRotationDirection   RotationDirection
+	AnsweredRotationDirection RotationDirection
+	Response                  Response
+	MeanEstimation            Mean
+	SDEstimation              SD
+	LowerAsymptoteEstimation  LowerAsymptote
+	LapseRateEstimation       LapseRate
+}
+
+type RotationDirection string
+
+const (
+	RotationDirectionPositive = "positive"
+	RotationDirectionNegative = "negative"
+)
+
+type ResultMDDCW struct {
+	ExperimentMDDCW ExperimentMDDCW
+	ResultDetail    []QuestPlusResultNormCDF
+	Subject         Subject
+	Mean            Mean
+	Sd              SD
+	LowerAsymptote  LowerAsymptote
+	LapseRate       LapseRate
+}
+
+type Subject struct {
+	Sex                    Sex // ISO5218
+	Age                    Age
+	DeafAndHearingImpaired DeafAndHearingImpaired
+}
+
+type Sex string
+
+const (
+	SexNotKnown      = "not known"
+	SexMale          = "male"
+	SexFemale        = "female"
+	SexNotApplicable = "not applicable"
+)
+
+type Age uint64
+
+func NewAge(v uint64) Age {
+	return Age(v)
+}
+
+type DeafAndHearingImpaired bool
