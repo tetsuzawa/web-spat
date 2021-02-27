@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 // ExperimentName is name of a experiment.
 // The length must be in 64 characters.
 type ExperimentName string
@@ -132,3 +134,78 @@ func NewNumTrials(v uint64) NumTrials {
 func (v *NumTrials) ToInt() int {
 	return int(*v)
 }
+
+type ExperimentMDDCW struct {
+	QuestPlusParameterNormCDF QuestPlusParameterNormCDF
+	Name                      ExperimentName
+	Description               ExperimentDescription
+	Azimuth                   Azimuth  // 0[10^-1 deg] is the front, 900[10^-1 deg] is the right side
+	Altitude                  Altitude // 0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir
+	CoordinateVariable        CoordinateVariable
+	Width                     Width              // [10^-1 deg]
+	VelocityRangeLower        VelocityRangeLower // [10^-1 deg/sec]
+	VelocityRangeUpper        VelocityRangeUpper // [10^-1 deg/sec]
+	VelocityRangeStep         VelocityRangeStep  // [10^-1 deg/sec]
+	NumTrials                 NumTrials
+	CreatedAt                 time.Time
+}
+
+type QuestPlusParameterNormCDF struct {
+	StimDomain            StimDomainNormCDF     `json:"stim_domain"`
+	ParamDomain           ParamDomainNormCDF    `json:"param_domain"`
+	OutcomeDomain         OutcomeDomain         `json:"outcome_domain"`
+	Prior                 PriorNormCDF          `json:"prior"`
+	Func                  Func                  `json:"func"`
+	StimScale             StimScase             `json:"stim_scale"`
+	StimSelectionMethod   StimSelectionMethod   `json:"stim_selection_method"`
+	ParamEstimationMethod ParamEstimationMethod `json:"param_estimation_method"`
+}
+
+type StimDomainNormCDF struct {
+	Intensity []float64 `json:"intensity"`
+}
+
+type ParamDomainNormCDF struct {
+	Mean           []float64 `json:"mean"`
+	SD             []float64 `json:"sd"`
+	LowerAsymptote []float64 `json:"lower_asymptote"`
+	LapseRate      []float64 `json:"lapse_rate"`
+}
+
+type OutcomeDomain struct {
+	Response struct{} `json:"response"`
+}
+
+type PriorNormCDF struct {
+	Mean           []float64 `json:"mean"`
+	SD             []float64 `json:"sd"`
+	LowerAsymptote []float64 `json:"lower_asymptote"`
+	LapseRate      []float64 `json:"lapse_rate"`
+}
+
+type Func string
+
+const (
+	NormCDF = Func("norm_cdf")
+)
+
+type StimScase string
+
+const (
+	Linear = StimScase("linear")
+	Log10  = StimScase("log10")
+)
+
+type StimSelectionMethod string
+
+const (
+	MinEntropy  = StimSelectionMethod("min_entropy")
+	MinNEntropy = StimSelectionMethod("min_n_entropy")
+)
+
+type ParamEstimationMethod string
+
+const (
+	Mode = ParamEstimationMethod("mode")
+	Mean = ParamEstimationMethod("mean")
+)
