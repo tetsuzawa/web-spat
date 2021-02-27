@@ -255,7 +255,7 @@ type ResultMDDCW struct {
 	ResultDetail    []QuestPlusResultNormCDF
 	Subject         Subject
 	Mean            Mean
-	Sd              SD
+	SD              SD
 	LowerAsymptote  LowerAsymptote
 	LapseRate       LapseRate
 }
