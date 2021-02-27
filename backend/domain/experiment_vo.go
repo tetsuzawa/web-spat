@@ -89,6 +89,18 @@ func (v *Width) ToInt() int {
 	return int(*v)
 }
 
+// Velocity is the Velocity of moving angle.
+type Velocity uint64
+
+// NewVelocity generates Velocity.
+func NewVelocity(v uint64) Velocity {
+	return Velocity(v)
+}
+
+func (v *Velocity) ToInt() int {
+	return int(*v)
+}
+
 type VelocityRangeLower uint64
 
 // NewVelocityRangeLower generates NewVelocityRangeLower.
