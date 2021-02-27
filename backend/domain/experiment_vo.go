@@ -1,7 +1,5 @@
 package domain
 
-import "time"
-
 // ExperimentName is name of a experiment.
 // The length must be in 64 characters.
 type ExperimentName string
@@ -147,7 +145,6 @@ type ExperimentMDDCW struct {
 	VelocityRangeUpper        VelocityRangeUpper // [10^-1 deg/sec]
 	VelocityRangeStep         VelocityRangeStep  // [10^-1 deg/sec]
 	NumTrials                 NumTrials
-	CreatedAt                 time.Time
 }
 
 type QuestPlusParameterNormCDF struct {
