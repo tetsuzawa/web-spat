@@ -266,13 +266,14 @@ type Subject struct {
 	DeafAndHearingImpaired DeafAndHearingImpaired
 }
 
+//'0: not known, 1: mail, 2: female, 9: not applicable. ISO 5218'
 type Sex string
 
 const (
-	SexNotKnown      = "not known"
-	SexMale          = "male"
-	SexFemale        = "female"
-	SexNotApplicable = "not applicable"
+	SexNotKnown      = "0"
+	SexMale          = "1"
+	SexFemale        = "2"
+	SexNotApplicable = "9"
 )
 
 type Age uint64
