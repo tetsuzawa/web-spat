@@ -8,6 +8,6 @@ import (
 // IExperimentRepository represent repository of the experiments.
 // Expect implementation by the infrastructure layer.
 type IExperimentRepository interface {
-	ListMDDCWActive(ctx context.Context) ([]*domain.ExperimentMDDCWDetail, error)
-	ListMDDCWInactive(ctx context.Context) ([]*domain.ExperimentMDDCWDetail, error)
+	ListMDDCWActive(ctx context.Context) ([]*domain.ExperimentMDDCW, error)
+	ListMDDCWInactive(ctx context.Context) ([]*domain.ExperimentMDDCW, error)
 }
