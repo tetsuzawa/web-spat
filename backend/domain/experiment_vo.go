@@ -13,10 +13,6 @@ func NewExperimentName(v string) (ExperimentName, error) {
 	return ExperimentName(v), nil
 }
 
-func (v *ExperimentName) ToString() string {
-	return string(*v)
-}
-
 // ExperimentDescription is description of a experiment.
 // The length must be in 1024 characters.
 type ExperimentDescription string
@@ -28,10 +24,6 @@ func NewExperimentDescription(v string) (ExperimentDescription, error) {
 		return "", ErrTooLongExperimentDescription
 	}
 	return ExperimentDescription(v), nil
-}
-
-func (v *ExperimentDescription) ToString() string {
-	return string(*v)
 }
 
 // Azimuth is the horizontal angle.
@@ -48,10 +40,6 @@ func NewAzimuth(v uint64) (Azimuth, error) {
 	return Azimuth(v), nil
 }
 
-func (v *Azimuth) ToInt() int {
-	return int(*v)
-}
-
 // Altitude is the vertical angle.
 // 0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir.
 type Altitude int64
@@ -63,10 +51,6 @@ func NewAltitude(v uint64) (Altitude, error) {
 		return 0, ErrInvalidAltitudeValue
 	}
 	return Altitude(v), nil
-}
-
-func (v *Altitude) ToInt() int {
-	return int(*v)
 }
 
 // CoordinateVariable is the variable
@@ -85,20 +69,12 @@ func NewWidth(v uint64) Width {
 	return Width(v)
 }
 
-func (v *Width) ToInt() int {
-	return int(*v)
-}
-
 // Velocity is the Velocity of moving angle.
 type Velocity uint64
 
 // NewVelocity generates Velocity.
 func NewVelocity(v uint64) Velocity {
 	return Velocity(v)
-}
-
-func (v *Velocity) ToInt() int {
-	return int(*v)
 }
 
 type VelocityRangeLower uint64
@@ -108,19 +84,11 @@ func NewVelocityRangeLower(v uint64) VelocityRangeLower {
 	return VelocityRangeLower(v)
 }
 
-func (v *VelocityRangeLower) ToInt() int {
-	return int(*v)
-}
-
 type VelocityRangeUpper uint64
 
 // NewVelocityRangeUpper generates NewVelocityRangeUpper.
 func NewVelocityRangeUpper(v uint64) VelocityRangeUpper {
 	return VelocityRangeUpper(v)
-}
-
-func (v *VelocityRangeUpper) ToInt() int {
-	return int(*v)
 }
 
 type VelocityRangeStep uint64
@@ -130,19 +98,11 @@ func NewVelocityRangeStep(v uint64) VelocityRangeStep {
 	return VelocityRangeStep(v)
 }
 
-func (v *VelocityRangeStep) ToInt() int {
-	return int(*v)
-}
-
 type NumTrials uint64
 
 // NewNumTrials generates NewNumTrials.
 func NewNumTrials(v uint64) NumTrials {
 	return NumTrials(v)
-}
-
-func (v *NumTrials) ToInt() int {
-	return int(*v)
 }
 
 type ExperimentMDDCW struct {
