@@ -69,6 +69,14 @@ func (v *Altitude) ToInt() int {
 	return int(*v)
 }
 
+// CoordinateVariable is the variable
+type CoordinateVariable string
+
+const (
+	CoordinateVariableAzimuth  = CoordinateVariable("azimuth")
+	CoordinateVariableAltitude = CoordinateVariable("altitude")
+)
+
 // Width is the width of moving angle.
 type Width uint64
 
