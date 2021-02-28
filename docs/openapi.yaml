@@ -27,201 +27,439 @@ paths:
           description: OK
           content:
             text/plain; charset=UTF-8:
-              examples: 
+              examples:
                 ping:
                   value:
                     "OK"
-  /experiments:
-    get:
-      operationId: listExperiments
-      summary: Returns a list of experiments.
-      description: >
-        Returns alist of experiments. experiment type, conditions.
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Experiments'
-                
-  /experiments/{id}:
-    get:
-      operationId: getExperimentById
-      summary: Represents a experiment by specified ID
-      parameters:
-        - name: id
-          in: path
-          description: Experiment ID
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/ExperimentMovementDirectionDiscriminationConstantWidth'
 
-  /experiments/{id}/results:
-    post:
-      operationId: registerResultOfExperimentId
-      summary: Register the result of the specified experiment ID
+  /experiment/mdd/active:
+    get:
+      operationId: listExperimentsMDDActive
+      summary: Returns a list of active experiments.
+      description: Returns a list of active experiments. The experimet type is Movement Direction Discrimination.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentsMDD'
+
+  /experiment/mdd/inactive:
+    get:
+      operationId: listExperimentsMDDInactive
+      summary: Returns a list of inactive experiments.
+      description: Returns a list of inactive experiments. The experimet type is Movement Direction Discrimination.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentsMDD'
+
+  /experiment/mdd/{id}:
+    get:
+      operationId: getExperimentMDDById
+      summary: Represents a experiment by specified ID.
+      description: Represents a experiment by specified ID. The experimet type is Movement Direction Discrimination.
       parameters:
         - name: id
           in: path
           description: Experiment ID
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/ExperimentId'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentMDD'
+
+  /experiment/mdd/{id}/results:
+    post:
+      operationId: registerResultOfExperimentMDDById
+      summary: Register the result of the specified experiment ID.
+      description: Register the result of the specified experiment ID. The experimet type is Movement Direction Discrimination.
+      parameters:
+        - name: id
+          in: path
+          description: Experiment ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/ExperimentId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResultMovementDirectionDiscriminationConstantWidth'
+              $ref: '#/components/schemas/ResultMDD'
       responses:
         '201':
           description: Successful operation
-          
+
 
 components:
   schemas:
-  
-    Experiments:
+    ExperimentsMDD:
+      description: Experiments for Movement Direction Discrimination
       type: array
       items:
-        anyOf:
-          - $ref: '#/components/schemas/ExperimentMovementDirectionDiscriminationConstantWidth'
-          
-    ExperimentMovementDirectionDiscriminationConstantWidth:
+        $ref: '#/components/schemas/ExperimentMDD'
+
+    ExperimentMDD:
+      description: Experiment for Movement Direction Discrimination
       type: object
       properties:
         id:
+          $ref: '#/components/schemas/ExperimentId'
+        quest_plus_parameter_norm_cdf:
+          $ref: '#/components/schemas/QuestPlusParameterNormCDF'
+        name:
+          $ref: '#/components/schemas/ExperimentName'
+        description:
+          $ref: '#/components/schemas/ExperimentDescription'
+        azimuth:
+          $ref: '#/components/schemas/Azimuth'
+        altitude:
+          $ref: '#/components/schemas/Altitude'
+        coordinate_variable:
+          $ref: '#/components/schemas/CoordinateVariable'
+        moving_sound_constant:
+          $ref: '#/components/schemas/MovingSoundConstant'
+        moving_sound_constant_value:
           type: integer
           format: int64
-        name:
-          type: string
-          maxLength: 255
-        description:
-          type: string
-          maxLength: 1023
-        azimuth:
-          type: integer
-          minimum: 0
-          maximum: 3599
-          description: '0[10^-1 deg] is the front, 900[10^-1 deg] is the right side'
-          example: 450
-        altitude:
-          type: integer
-          minimum: -900
-          maximum: 900
-          description: '0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir'
-          example: 0
-        coordinate_variable:
-          type: string
-          enum: 
-            - 'azimuth'
-            - 'altitude'
-        width:
-          type: integer
-          minimum: 1
-          description: 'width of moving sound [10^-1 deg]'
-          example: 70
-        velocity_range_lower:
-          type: integer
-          minimum: 1
-          example: 50
-        velocity_range_upper:
-          type: integer
-          minimum: 1
-          example: 800
-        velocity_range_step:
-          type: integer
-          minimum: 1
-          example: 50
+          description: 'width or velocity'
         num_trials:
-          type: integer
-          minimum: 1
-          example: 100
-        status:
-          type: string
-          enum:
-            - 'active'
-            - 'inactive'
+          $ref: '#/components/schemas/NumTrials'
       required:
         - id
+        - quest_plus_parameter_norm_cdf
         - name
         - description
         - azimuth
         - altitude
         - coordinate_variable
-        - width
-        - velocity_range_lower
-        - velocity_range_upper
-        - velocity_range_step
+        - moving_sound_constant
+        - moving_sound_constant_value
         - num_trials
-        - status
-        
-    ResultMovementDirectionDiscriminationConstantWidth:
+
+    ExperimentId:
+      type: integer
+      format: int64
+      minimum: 1
+
+    ExperimentName:
+      type: string
+      maxLength: 64
+
+    ExperimentDescription:
+      type: string
+      maxLength: 1024
+
+    Azimuth:
+      type: integer
+      format: int64
+      minimum: 0
+      maximum: 3599
+      description: '0[10^-1 deg] is the front, 900[10^-1 deg] is the right side'
+      example: 450
+
+    Altitude:
+      type: integer
+      format: int64
+      minimum: -900
+      maximum: 900
+      description: '0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir'
+      example: 0
+
+    CoordinateVariable:
+      type: string
+      enum:
+        - 'azimuth'
+        - 'altitude'
+
+    MovingSoundConstant:
+      type: string
+      enum:
+        - 'width'
+        - 'velocity'
+
+    NumTrials:
+      type: integer
+      format: int64
+      minimum: 1
+      example: 100
+
+    QuestPlusParameterNormCDF:
       type: object
       properties:
-        experiment_id:
-          type: integer
-          format: int64
-        subject:
-          $ref: '#/components/schemas/Subject'
-        estimated_parameters:
-          $ref: '#/components/schemas/EstimatedParameters'
+        stim_domain:
+          $ref: '#/components/schemas/StimDomainNormCDF'
+        param_domain:
+          $ref: '#/components/schemas/ParamDomainNormCDF'
+        outcome_domain:
+          $ref: '#/components/schemas/OutcomeDomainNormCDF'
+        prior:
+          $ref: '#/components/schemas/PriorNormCDF'
+        func:
+          $ref: '#/components/schemas/QuestPlusFunc'
+        stim_scale:
+          $ref: '#/components/schemas/QuestPlusStimScale'
+        stim_selection_method:
+          $ref: '#/components/schemas/QuestPlusStimSelectionMethod'
+        param_estimation_method:
+          $ref: '#/components/schemas/QuestPlusParamEstimationMethod'
       required:
-        - experiment_id
-        - subject
-        - estimated_parameters
+        - stim_domain
+        - param_domain
+        - outcome_domain
+        - prior
+        - func
+        - stim_scale
+        - stim_selection_method
+        - param_estimation_method
 
 
-    Subject:
+    StimDomainNormCDF:
       type: object
       properties:
-        sex:
-          type: string
-          enum:
-            - '0'
-            - '1'
-            - '2'
-            - '9'
-          description: >
-            '0: not known, 1: mail, 2: female, 9: not applicable. ISO 5218'
-        age:
-          type: integer
-          minimum: 0
-          maximum: 200
-        deaf_and_hearing_impaired:
-          type: boolean
-          default: false
+        intensity:
+          type: array
+          items:
+            type: number
+            format: double
       required:
-        - sex
-        - age
-        - deaf_and_hearing_impaired
-    
-    EstimatedParameters:
+        - intensity
+
+    ParamDomainNormCDF:
       type: object
       properties:
         mean:
-          type: number
-          format: double
+          $ref: '#/components/schemas/Mean'
         sd:
-          type: number
-          format: double
+          $ref: '#/components/schemas/SD'
         lower_asymptote:
-          type: number
-          format: double
+          $ref: '#/components/schemas/LowerAsymptote'
         lapse_rate:
-          type: number
-          format: double
+          $ref: '#/components/schemas/LapseRate'
       required:
         - mean
         - sd
         - lower_asymptote
         - lapse_rate
+
+    OutcomeDomainNormCDF:
+      type: object
+      properties:
+        response:
+          type: string
+      required:
+        - response
+
+    PriorNormCDF:
+      type: object
+      properties:
+        mean:
+          type: array
+          items:
+            $ref: '#/components/schemas/Probability'
+        sd:
+          type: array
+          items:
+            $ref: '#/components/schemas/Probability'
+        lower_asymptote:
+          type: array
+          items:
+            $ref: '#/components/schemas/Probability'
+        lapse_rate:
+          type: array
+          items:
+            $ref: '#/components/schemas/Probability'
+      required:
+        - mean
+        - sd
+        - lower_asymptote
+        - lapse_rate
+
+    Probability:
+      type: number
+      format: double
+      minimum: 0
+      maximum: 1
+
+    QuestPlusFunc:
+      type: string
+      enum:
+        - 'norm_cdf'
+        - 'weibull'
+        - 'logistic'
+
+    QuestPlusStimScale:
+      type: string
+      enum:
+        - 'linear'
+        - 'log10'
+
+    QuestPlusStimSelectionMethod:
+      type: string
+      enum:
+        - 'min_entropy'
+        - 'min_n_entropy'
+
+    QuestPlusParamEstimationMethod:
+      type: string
+      enum:
+        - 'mean'
+        - 'mode'
+
+    QuestPlusResultNormCDF:
+      properties:
+        num_trials:
+          $ref: '#/components/schemas/NumTrials'
+        width:
+          $ref: '#/components/schemas/Width'
+        velocity:
+          $ref: '#/components/schemas/Velocity'
+        azimuth:
+          $ref: '#/components/schemas/Azimuth'
+        altitude:
+          $ref: '#/components/schemas/Altitude'
+        actual_rotation_direction:
+          $ref: '#/components/schemas/RotationDirection'
+        answered_rotation_direction:
+          $ref: '#/components/schemas/RotationDirection'
+        response:
+          $ref: '#/components/schemas/Response'
+        mean_estimation:
+          $ref: '#/components/schemas/Mean'
+        sd_estimation:
+          $ref: '#/components/schemas/SD'
+        lower_asymptote_estimation:
+          $ref: '#/components/schemas/LowerAsymptote'
+        lapse_rate_estimation:
+          $ref: '#/components/schemas/LapseRate'
+      required:
+        - num_trials
+        - width
+        - velocity
+        - azimuth
+        - altitude
+        - actual_rotation_direction
+        - answered_rotation_direction
+        - response
+        - mean_estimation
+        - sd_estimation
+        - lower_asymptote_estimation
+        - lapse_rate_estimation
+
+    Width:
+      type: integer
+      format: int64
+      minimum: 1
+
+    Velocity:
+      type: integer
+      format: int64
+      minimum: 1
+
+    RotationDirection:
+      type: string
+      enum:
+        - 'positive'
+        - 'negative'
+
+    Response:
+      type: string
+      enum:
+        - 'Correct'
+        - 'Incorrect'
+
+    Mean:
+      type: number
+      format: double
+
+    SD:
+      type: number
+      format: double
+      minimum: 0
+
+    LowerAsymptote:
+      type: number
+      format: double
+      minimum: 0
+      maximum: 1
+
+    LapseRate:
+      type: number
+      format: double
+      minimum: 0
+      maximum: 1
+
+    ResultMDD:
+      description: Result of Movement Direction Discrimination
+      type: object
+      properties:
+        experiment_mdd:
+          $ref: '#/components/schemas/ExperimentMDD'
+        result_detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestPlusResultNormCDF'
+        subject:
+          $ref: '#/components/schemas/Subject'
+        mean:
+          $ref: '#/components/schemas/Mean'
+        sd:
+          $ref: '#/components/schemas/SD'
+        lower_asymptote:
+          $ref: '#/components/schemas/LowerAsymptote'
+        lapse_rate:
+          $ref: '#/components/schemas/LapseRate'
+      required:
+        - experiment_mdd
+        - result_detail
+        - subject
+        - mean
+        - sd
+        - lower_asymptote
+        - lapse_rate
+
+    Subject:
+      type: object
+      properties:
+        sex:
+          $ref: '#/components/schemas/Sex'
+        age:
+          $ref: '#/components/schemas/Age'
+        deaf_and_hearing_impaired:
+          $ref: '#/components/schemas/DeafAndHearingImpaired'
+      required:
+        - sex
+        - age
+        - deaf_and_hearing_impaired
+
+    Sex:
+      type: string
+      enum:
+        - 'not known'
+        - 'male'
+        - 'female'
+        - 'not applicable'
+      description: >
+        '0: not known, 1: male, 2: female, 9: not applicable. ISO 5218'
+
+    Age:
+      type: integer
+      format: int64
+      minimum: 0
+      maximum: 200
+
+    DeafAndHearingImpaired:
+      type: boolean
+      default: false
+
+

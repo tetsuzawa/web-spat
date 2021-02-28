@@ -1,8 +1,9 @@
-name: backend
+name: ci_backend
 on:
   push:
-    branches:
-      - master
+    paths:
+      - 'backend/**'
+  pull_request:
     paths:
       - 'backend/**'
 jobs:

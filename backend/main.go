@@ -3,18 +3,19 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
 
 	"github.com/tetsuzawa/web-spat/interfaces/server"
 )
+
+func init() {
+	log.SetFlags(log.Ldate + log.Ltime + log.Lshortfile)
+	log.SetOutput(os.Stdout)
+}
 
 func main() {
 	var port int
 	flag.IntVar(&port, "port", 1991, "Web server port")
 	flag.Parse()
-
-	s := server.NewServer()
-	if err := s.Init(); err != nil {
-		log.Fatal(err)
-	}
-	s.Run(port)
+	server.Run(port)
 }

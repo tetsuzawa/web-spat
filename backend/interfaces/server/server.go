@@ -3,67 +3,51 @@ package server
 import (
 	"fmt"
 	"log"
-	"os"
 
-	"github.com/jmoiron/sqlx"
+	oapimiddleware "github.com/deepmap/oapi-codegen/pkg/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/tetsuzawa/web-spat/config"
+	"github.com/tetsuzawa/web-spat/infrastructure/persistence"
 	"github.com/tetsuzawa/web-spat/interfaces/server/handler"
+	"github.com/tetsuzawa/web-spat/interfaces/server/openapi"
+	"github.com/tetsuzawa/web-spat/usecase"
 )
 
-type Server struct {
-	e        *echo.Echo
-	db       *sqlx.DB
-	teardown func()
-}
-
-func NewServer() *Server {
-	return &Server{teardown: func() {}}
-}
-
-func (s *Server) Init() (err error) {
-	log.SetFlags(log.Ldate + log.Ltime + log.Lshortfile)
-	log.SetOutput(os.Stdout)
-
-	s.db, err = config.NewDBConnection()
+func Run(port int) {
+	// connect to DB
+	db, err := config.NewDBConnection()
+	defer db.Close()
 	if err != nil {
-		return fmt.Errorf("failed to init DB connection -> %w", err)
+		log.Fatalln(fmt.Errorf("failed to init DB connection -> %w", err))
 	}
 
-	s.e = s.Route()
-	s.teardown = func() {
-		if err := s.db.Close(); err != nil {
-			log.Printf("failed to close DB -> %v", err)
-		}
-	}
-	return nil
-}
-
-func (s *Server) Run(port int) {
-	// Start server
-	err := s.e.Start(fmt.Sprintf(":%d", port))
-	s.teardown()
-	s.e.Logger.Fatal(err)
-}
-
-func (s *Server) Route() *echo.Echo {
 	e := echo.New()
 
-	buildEnv := config.GetEnvWithDefault("BUILD_ENV", "Release")
-	if buildEnv == "Debug" {
+	if buildEnv := config.GetEnvWithDefault("BUILD_ENV", "Release"); buildEnv == "Debug" {
 		log.Println("server is running on Debug mode...")
 		e.Debug = true
 	}
+
+	// routing
+	h := handler.NewIntegratedHandler(
+		*handler.NewExperimentsHandler(usecase.NewExperimentUseCase(persistence.NewExperimentRepository(db))),
+		*handler.NewUtilHandler(),
+	)
+
+	openapi.RegisterHandlersWithBaseURL(e, h, "/v1")
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	// Routes
-	v1 := e.Group("/v1")
-	v1.GET("/ping", handler.Ping)
+	swagger, err := openapi.GetSwagger()
+	if err != nil {
+		log.Fatalf("Error loading swagger spec\n: %s", err)
+	}
 
-	return e
+	e.Use(oapimiddleware.OapiRequestValidator(swagger))
+
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", port)))
 }

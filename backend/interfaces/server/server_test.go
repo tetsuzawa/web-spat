@@ -5,12 +5,21 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
 
+	"github.com/tetsuzawa/web-spat/infrastructure/persistence_mock"
+
+	oapimiddleware "github.com/deepmap/oapi-codegen/pkg/middleware"
 	"github.com/getkin/kin-openapi/openapi3filter"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/tetsuzawa/web-spat/interfaces/server/handler"
+	"github.com/tetsuzawa/web-spat/interfaces/server/openapi"
+	"github.com/tetsuzawa/web-spat/usecase"
 )
 
 func TestServer_Run(t *testing.T) {
@@ -31,6 +40,16 @@ func TestServer_Run(t *testing.T) {
 			args:    args{method: http.MethodGet, url: "/ping", body: nil},
 			wantErr: false,
 		},
+		{
+			name:    "listExperimentsMDDActive",
+			args:    args{method: http.MethodGet, url: "/experiment/mdd/active", body: nil},
+			wantErr: false,
+		},
+		{
+			name:    "listExperimentsMDDInactive",
+			args:    args{method: http.MethodGet, url: "/experiment/mdd/inactive", body: nil},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -47,16 +66,38 @@ func TestServer_Run(t *testing.T) {
 }
 
 func HelperTestRequest(t *testing.T, request *http.Request) error {
-	s := NewServer()
-	if err := s.Init(); err != nil {
-		return fmt.Errorf("failed to init server -> %w", err)
+	e := echo.New()
+	e.Debug = true
+
+	// routing
+	h := handler.NewIntegratedHandler(
+		*handler.NewExperimentsHandler(usecase.NewExperimentUseCase(persistence_mock.NewExperimentRepository())),
+		*handler.NewUtilHandler(),
+	)
+
+	openapi.RegisterHandlersWithBaseURL(e, h, "/v1")
+
+	// Middleware
+	//e.Use(middleware.Logger())
+	e.Use(middleware.CORS())
+
+	swagger, err := openapi.GetSwagger()
+	if err != nil {
+		log.Fatalf("Error loading swagger spec\n: %s", err)
 	}
-	ts := httptest.NewServer(s.e)
+
+	e.Use(oapimiddleware.OapiRequestValidator(swagger))
+	// routing
+
+	openapi.RegisterHandlersWithBaseURL(e, h, "/v1")
+
+	ts := httptest.NewServer(e)
 	defer ts.Close()
 
 	openAPIRouter := openapi3filter.NewRouter().WithSwaggerFromFile("../../../docs/openapi.yaml")
 	route, pathParams, err := openAPIRouter.FindRoute(request.Method, request.URL)
 	if err != nil {
+		t.Logf("method:%v, request.URL:%v\n", request.Method, request.URL)
 		return fmt.Errorf("FindRoute() -> %w", err)
 	}
 
@@ -66,6 +107,7 @@ func HelperTestRequest(t *testing.T, request *http.Request) error {
 	}
 	request.URL.Scheme = u.Scheme
 	request.URL.Host = u.Host
+	t.Logf("%+v",request)
 	response, err := http.DefaultClient.Do(request)
 	if err != nil {
 		return fmt.Errorf("http.DefaultClient.Do() -> %w", err)
@@ -73,6 +115,7 @@ func HelperTestRequest(t *testing.T, request *http.Request) error {
 	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
+	t.Log(string(body))
 	if err != nil {
 		return err
 	}
@@ -91,8 +134,11 @@ func HelperTestRequest(t *testing.T, request *http.Request) error {
 	}
 	responseValidationInput.SetBodyBytes(body)
 
-	t.Logf("request = %+v", request)
-	t.Logf("response = %+v", response)
+	if err := openapi3filter.ValidateResponse(context.TODO(), responseValidationInput); err != nil {
+		t.Logf("request = %+v", request)
+		t.Logf("response = %+v", response)
+		return err
+	}
 
-	return openapi3filter.ValidateResponse(context.TODO(), responseValidationInput)
+	return nil
 }
