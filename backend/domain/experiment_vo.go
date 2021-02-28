@@ -1,5 +1,7 @@
 package domain
 
+type ExperimentId uint64
+
 // ExperimentName is name of a experiment.
 // The length must be in 64 characters.
 type ExperimentName string
@@ -46,7 +48,7 @@ type Altitude int64
 
 // NewAltitude generates Altitude.
 // If the value of argument is invalid, it returns ErrInvalidAltitudeValue.
-func NewAltitude(v uint64) (Altitude, error) {
+func NewAltitude(v int64) (Altitude, error) {
 	if v < -900 || 900 < v {
 		return 0, ErrInvalidAltitudeValue
 	}
@@ -60,6 +62,22 @@ const (
 	CoordinateVariableAzimuth  = CoordinateVariable("azimuth")
 	CoordinateVariableAltitude = CoordinateVariable("altitude")
 )
+
+// MovingSoundConstant is the variable
+type MovingSoundConstant string
+
+const (
+	MovingSoundConstantWidth    = MovingSoundConstant("width")
+	MovingSoundConstantVelocity = MovingSoundConstant("velocity")
+)
+
+// MovingSoundConstantValue is the value of MovingSoundConstant
+type MovingSoundConstantValue uint64
+
+// NewNewMovingSoundConstantValue generates MovingSoundConstantValue.
+func NewMovingSoundConstantValue(v uint64) MovingSoundConstantValue {
+	return MovingSoundConstantValue(v)
+}
 
 // Width is the width of moving angle.
 type Width uint64
@@ -77,27 +95,6 @@ func NewVelocity(v uint64) Velocity {
 	return Velocity(v)
 }
 
-type VelocityRangeLower uint64
-
-// NewVelocityRangeLower generates NewVelocityRangeLower.
-func NewVelocityRangeLower(v uint64) VelocityRangeLower {
-	return VelocityRangeLower(v)
-}
-
-type VelocityRangeUpper uint64
-
-// NewVelocityRangeUpper generates NewVelocityRangeUpper.
-func NewVelocityRangeUpper(v uint64) VelocityRangeUpper {
-	return VelocityRangeUpper(v)
-}
-
-type VelocityRangeStep uint64
-
-// NewVelocityRangeStep generates NewVelocityRangeStep.
-func NewVelocityRangeStep(v uint64) VelocityRangeStep {
-	return VelocityRangeStep(v)
-}
-
 type NumTrials uint64
 
 // NewNumTrials generates NewNumTrials.
@@ -105,17 +102,16 @@ func NewNumTrials(v uint64) NumTrials {
 	return NumTrials(v)
 }
 
-type ExperimentMDDCW struct {
+type ExperimentMDD struct {
+	Id                        ExperimentId
 	QuestPlusParameterNormCDF QuestPlusParameterNormCDF
 	Name                      ExperimentName
 	Description               ExperimentDescription
 	Azimuth                   Azimuth  // 0[10^-1 deg] is the front, 900[10^-1 deg] is the right side
 	Altitude                  Altitude // 0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir
 	CoordinateVariable        CoordinateVariable
-	Width                     Width              // [10^-1 deg]
-	VelocityRangeLower        VelocityRangeLower // [10^-1 deg/sec]
-	VelocityRangeUpper        VelocityRangeUpper // [10^-1 deg/sec]
-	VelocityRangeStep         VelocityRangeStep  // [10^-1 deg/sec]
+	MovingSoundConstant       MovingSoundConstant
+	MovingSoundConstantValue  MovingSoundConstantValue
 	NumTrials                 NumTrials
 }
 
@@ -250,14 +246,14 @@ const (
 	RotationDirectionNegative = "negative"
 )
 
-type ResultMDDCW struct {
-	ExperimentMDDCW ExperimentMDDCW
-	ResultDetail    []QuestPlusResultNormCDF
-	Subject         Subject
-	Mean            Mean
-	SD              SD
-	LowerAsymptote  LowerAsymptote
-	LapseRate       LapseRate
+type ResultMDD struct {
+	ExperimentMDD  ExperimentMDD
+	ResultDetail   []QuestPlusResultNormCDF
+	Subject        Subject
+	Mean           Mean
+	SD             SD
+	LowerAsymptote LowerAsymptote
+	LapseRate      LapseRate
 }
 
 type Subject struct {

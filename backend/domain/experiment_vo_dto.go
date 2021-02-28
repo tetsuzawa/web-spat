@@ -1,44 +1,42 @@
 package domain
 
-type ExperimentMDDCWData struct {
-	QuestPlusParameterNormCDF QuestPlusParameterNormCDFData
-	Name                      string `json:"name"`
-	Description               string `json:"description"`
-	Azimuth                   int    `json:"azimuth"`
-	Altitude                  int    `json:"altitude"`
-	CoordinateVariable        string `json:"coordinate_variable"`
-	Width                     int    `json:"width"`
-	VelocityRangeLower        int    `json:"velocity_range_lower"`
-	VelocityRangeUpper        int    `json:"velocity_range_upper"`
-	VelocityRangeStep         int    `json:"velocity_range_step"`
-	NumTrials                 int    `json:"num_trials"`
+type ExperimentMDDData struct {
+	Id                        uint64                        `db:"id"`
+	QuestPlusParameterNormCDF QuestPlusParameterNormCDFData `db:"quest_plus_parameter_norm_cdf"`
+	Name                      string                        `db:"name"`
+	Description               string                        `db:"description"`
+	Azimuth                   uint64                        `db:"azimuth"`
+	Altitude                  int64                         `db:"altitude"`
+	CoordinateVariable        string                        `db:"coordinate_variable"`
+	MovingSoundConstant       string                        `db:"moving_sound_constant"`
+	MovingSoundConstantValue  uint64                        `db:"moving_sound_constant_value"`
+	NumTrials                 uint64                        `db:"num_trials"`
 }
 
-func NewExperimentMDDCWData(v *ExperimentMDDCW) *ExperimentMDDCWData {
-	return &ExperimentMDDCWData{
+func NewExperimentMDDData(v *ExperimentMDD) *ExperimentMDDData {
+	return &ExperimentMDDData{
+		Id:                        uint64(v.Id),
 		QuestPlusParameterNormCDF: *NewQuestPlusParameterNormCDFData(&v.QuestPlusParameterNormCDF),
 		Name:                      string(v.Name),
 		Description:               string(v.Description),
-		Azimuth:                   int(v.Azimuth),
-		Altitude:                  int(v.Altitude),
+		Azimuth:                   uint64(v.Azimuth),
+		Altitude:                  int64(v.Altitude),
 		CoordinateVariable:        string(v.CoordinateVariable),
-		Width:                     int(v.Width),
-		VelocityRangeLower:        int(v.VelocityRangeLower),
-		VelocityRangeUpper:        int(v.VelocityRangeUpper),
-		VelocityRangeStep:         int(v.VelocityRangeStep),
-		NumTrials:                 int(v.NumTrials),
+		MovingSoundConstant:       string(v.MovingSoundConstant),
+		MovingSoundConstantValue:  uint64(v.MovingSoundConstantValue),
+		NumTrials:                 uint64(v.NumTrials),
 	}
 }
 
 type QuestPlusParameterNormCDFData struct {
-	StimDomain            StimDomainNormCDFData  `json:"stim_domain"`
-	ParamDomain           ParamDomainNormCDFData `json:"param_domain"`
-	OutcomeDomain         OutcomeDomainData      `json:"outcome_domain"`
-	Prior                 PriorNormCDFData       `json:"prior"`
-	Func                  string                 `json:"func"`
-	StimScale             string                 `json:"stim_scale"`
-	StimSelectionMethod   string                 `json:"stim_selection_method"`
-	ParamEstimationMethod string                 `json:"param_estimation_method"`
+	StimDomain            StimDomainNormCDFData  `db:"stim_domain"`
+	ParamDomain           ParamDomainNormCDFData `db:"param_domain"`
+	OutcomeDomain         OutcomeDomainData      `db:"outcome_domain"`
+	Prior                 PriorNormCDFData       `db:"prior"`
+	Func                  string                 `db:"func"`
+	StimScale             string                 `db:"stim_scale"`
+	StimSelectionMethod   string                 `db:"stim_selection_method"`
+	ParamEstimationMethod string                 `db:"param_estimation_method"`
 }
 
 func NewQuestPlusParameterNormCDFData(v *QuestPlusParameterNormCDF) *QuestPlusParameterNormCDFData {
@@ -55,7 +53,7 @@ func NewQuestPlusParameterNormCDFData(v *QuestPlusParameterNormCDF) *QuestPlusPa
 }
 
 type StimDomainNormCDFData struct {
-	Intensity []float64 `json:"intensity"`
+	Intensity []float64 `db:"intensity"`
 }
 
 func NewStimDomainNormCDFData(v *StimDomainNormCDF) *StimDomainNormCDFData {
@@ -65,10 +63,10 @@ func NewStimDomainNormCDFData(v *StimDomainNormCDF) *StimDomainNormCDFData {
 }
 
 type ParamDomainNormCDFData struct {
-	Mean           []float64 `json:"mean"`
-	SD             []float64 `json:"sd"`
-	LowerAsymptote []float64 `json:"lower_asymptote"`
-	LapseRate      []float64 `json:"lapse_rate"`
+	Mean           []float64 `db:"mean"`
+	SD             []float64 `db:"sd"`
+	LowerAsymptote []float64 `db:"lower_asymptote"`
+	LapseRate      []float64 `db:"lapse_rate"`
 }
 
 func NewParamDomainNormCDFData(v *ParamDomainNormCDF) *ParamDomainNormCDFData {
@@ -98,7 +96,7 @@ func NewParamDomainNormCDFData(v *ParamDomainNormCDF) *ParamDomainNormCDFData {
 }
 
 type OutcomeDomainData struct {
-	Response string `json:"response"`
+	Response string `db:"response"`
 }
 
 func NewOutcomeDomainData(v *OutcomeDomain) *OutcomeDomainData {
@@ -108,10 +106,10 @@ func NewOutcomeDomainData(v *OutcomeDomain) *OutcomeDomainData {
 }
 
 type PriorNormCDFData struct {
-	Mean           []float64 `json:"mean"`
-	SD             []float64 `json:"sd"`
-	LowerAsymptote []float64 `json:"lower_asymptote"`
-	LapseRate      []float64 `json:"lapse_rate"`
+	Mean           []float64 `db:"mean"`
+	SD             []float64 `db:"sd"`
+	LowerAsymptote []float64 `db:"lower_asymptote"`
+	LapseRate      []float64 `db:"lapse_rate"`
 }
 
 func NewPriorNormCDFData(v *PriorNormCDF) *PriorNormCDFData {
@@ -141,27 +139,27 @@ func NewPriorNormCDFData(v *PriorNormCDF) *PriorNormCDFData {
 }
 
 type QuestPlusResultNormCDFData struct {
-	NumTrials                 int     `json:"num_trials"`
-	Width                     int     `json:"width"`
-	Velocity                  int     `json:"velocity"`
-	Azimuth                   int     `json:"azimuth"`
-	Altitude                  int     `json:"altitude"`
-	ActualRotationDirection   string  `json:"actual_rotation_direction"`
-	AnsweredRotationDirection string  `json:"answered_rotation_direction"`
-	Response                  string  `json:"response"`
-	MeanEstimation            float64 `json:"mean_estimation"`
-	SDEstimation              float64 `json:"sd_estimation"`
-	LowerAsymptoteEstimation  float64 `json:"lower_asymptote_estimation"`
-	LapseRateEstimation       float64 `json:"lapse_rate_estimation"`
+	NumTrials                 uint64  `db:"num_trials"`
+	Width                     uint64  `db:"width"`
+	Velocity                  uint64  `db:"velocity"`
+	Azimuth                   uint64  `db:"azimuth"`
+	Altitude                  int64   `db:"altitude"`
+	ActualRotationDirection   string  `db:"actual_rotation_direction"`
+	AnsweredRotationDirection string  `db:"answered_rotation_direction"`
+	Response                  string  `db:"response"`
+	MeanEstimation            float64 `db:"mean_estimation"`
+	SDEstimation              float64 `db:"sd_estimation"`
+	LowerAsymptoteEstimation  float64 `db:"lower_asymptote_estimation"`
+	LapseRateEstimation       float64 `db:"lapse_rate_estimation"`
 }
 
 func NewQuestPlusResultNormCDFData(v *QuestPlusResultNormCDF) *QuestPlusResultNormCDFData {
 	return &QuestPlusResultNormCDFData{
-		NumTrials:                 int(v.NumTrials),
-		Width:                     int(v.Width),
-		Velocity:                  int(v.Velocity),
-		Azimuth:                   int(v.Azimuth),
-		Altitude:                  int(v.Altitude),
+		NumTrials:                 uint64(v.NumTrials),
+		Width:                     uint64(v.Width),
+		Velocity:                  uint64(v.Velocity),
+		Azimuth:                   uint64(v.Azimuth),
+		Altitude:                  int64(v.Altitude),
 		ActualRotationDirection:   string(v.ActualRotationDirection),
 		AnsweredRotationDirection: string(v.AnsweredRotationDirection),
 		Response:                  string(v.Response),
@@ -172,43 +170,43 @@ func NewQuestPlusResultNormCDFData(v *QuestPlusResultNormCDF) *QuestPlusResultNo
 	}
 }
 
-type ResultMDDCWData struct {
-	ExperimentMDDCW ExperimentMDDCWData          `json:"experiment_mddcw"`
-	ResultDetail    []QuestPlusResultNormCDFData `json:"result_detail"`
-	Subject         SubjectData                  `json:"subject"`
-	Mean            float64                      `json:"mean"`
-	Sd              float64                      `json:"sd"`
-	LowerAsymptote  float64                      `json:"lower_asymptote"`
-	LapseRate       float64                      `json:"lapse_rate"`
+type ResultMDDData struct {
+	ExperimentMDD  ExperimentMDDData            `db:"experiment_MDD"`
+	ResultDetail   []QuestPlusResultNormCDFData `db:"result_detail"`
+	Subject        SubjectData                  `db:"subject"`
+	Mean           float64                      `db:"mean"`
+	Sd             float64                      `db:"sd"`
+	LowerAsymptote float64                      `db:"lower_asymptote"`
+	LapseRate      float64                      `db:"lapse_rate"`
 }
 
-func NewResultMDDCWData(v *ResultMDDCW) *ResultMDDCWData {
+func NewResultMDDData(v *ResultMDD) *ResultMDDData {
 	resultDetailData := make([]QuestPlusResultNormCDFData, len(v.ResultDetail))
 	for _, x := range v.ResultDetail {
 		q := NewQuestPlusResultNormCDFData(&x)
 		resultDetailData = append(resultDetailData, *q)
 	}
-	return &ResultMDDCWData{
-		ExperimentMDDCW: *NewExperimentMDDCWData(&v.ExperimentMDDCW),
-		ResultDetail:    resultDetailData,
-		Subject:         *NewSubjectData(&v.Subject),
-		Mean:            float64(v.Mean),
-		Sd:              float64(v.SD),
-		LowerAsymptote:  float64(v.LowerAsymptote),
-		LapseRate:       float64(v.LapseRate),
+	return &ResultMDDData{
+		ExperimentMDD:  *NewExperimentMDDData(&v.ExperimentMDD),
+		ResultDetail:   resultDetailData,
+		Subject:        *NewSubjectData(&v.Subject),
+		Mean:           float64(v.Mean),
+		Sd:             float64(v.SD),
+		LowerAsymptote: float64(v.LowerAsymptote),
+		LapseRate:      float64(v.LapseRate),
 	}
 }
 
 type SubjectData struct {
-	Sex                    string `json:"sex"`
-	Age                    int    `json:"age"`
-	DeafAndHearingImpaired bool   `json:"deaf_and_hearing_impaired"`
+	Sex                    string `db:"sex"`
+	Age                    uint64 `db:"age"`
+	DeafAndHearingImpaired bool   `db:"deaf_and_hearing_impaired"`
 }
 
 func NewSubjectData(v *Subject) *SubjectData {
 	return &SubjectData{
 		Sex:                    string(v.Sex),
-		Age:                    int(v.Age),
+		Age:                    uint64(v.Age),
 		DeafAndHearingImpaired: bool(v.DeafAndHearingImpaired),
 	}
 }
