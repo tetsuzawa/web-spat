@@ -13,9 +13,9 @@ Project web_spat {
 
 
 // result, NormCDF
-Table result_mddcw {
+Table result_mdd {
   id int [pk, increment]
-  experiment_id int [not null, ref: > experiment_mddcw.id]
+  experiment_id int [not null, ref: > experiment_mdd.id]
   result_url text [not null]
   subject_id int [not null, ref: > subject.id]
   mean double [not null]
@@ -25,52 +25,109 @@ Table result_mddcw {
   created_at timestamp [not null, default: `now()`]
 }
 
-// // result, NormCDF
-// Table result_mddcv {
-//   id int [pk, increment]
-//   experiment_id int [not null, ref: > EMW.id]
-//   questplus_parameter_normcdf_id int [not null, ref: > questplus_parameter_normcdf.id]
-//   mean double [not null]
-//   sd double [not null]
-//   lower_asymptote double [not null]
-//   lapse_rate double [not null]
-// }
-
-Table experiment_mddcw {
+Table experiment_mdd {
   id int [pk, increment]
   created_at timestamp [not null, default: `now()`]
 }
 
-Table experiment_mddcw_active {
-  id int [pk, increment]
-  experiment_id int [not null, unique, ref: - experiment_mddcw.id]
+Table experiment_mdd_active {
+  // id int [pk, increment]
+  experiment_id int [pk, not null, ref: - experiment_mdd.id]
   created_at timestamp [not null, default: `now()`]
 }
 
-Table experiment_mddcw_inactive {
-  id int [pk, increment]
-  experiment_id int [not null, unique, ref: - experiment_mddcw.id]
+Table experiment_mdd_inactive {
+  // id int [pk, increment]
+  experiment_id int [pk, not null, ref: - experiment_mdd.id]
   created_at timestamp [not null, default: `now()`]
 }
 
-Table experiment_mddcw_detail{
-  id int [pk, increment]
-  experiment_id int [not null, unique, ref: - experiment_mddcw.id]
+enum coordinate_variable {
+  azimuth
+  altitude
+}
+
+enum moving_sound_variable {
+  width
+  velocity
+}
+
+Table experiment_mdd_detail{
+  // id int [pk, increment]
+  experiment_id int [pk, not null, ref: - experiment_mdd.id]
   questplus_parameter_normcdf_id int [not null, ref: > questplus_parameter_normcdf.id]
   name string [not null, unique]
   description string [not null]
   azimuth int [not null, note:'0[10^-1 deg] is the front, 900[10^-1 deg] is the right side']
   altitude int [not null, note:'0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir']
-  coordinate_variable_id int [not null, ref: > m_coordinate_variable.id]
-  width int [not null, note: '[10^-1 deg]']
-  velocity_range_lower int [not null, note: '[10^-1 deg/sec]']
-  velocity_range_upper int [not null, note: '[10^-1 deg/sec]']
-  velocity_range_step int [not null, note: '[10^-1 deg/sec]']
+  coordinate_variable coordinate_variable [not null]
+  moving_sound_variable moving_sound_variable [not null]
   num_trials int [not null]
   created_at timestamp [not null, default: `now()`]
 }
 
-// Table experiment_mddcv as EMV{
+// // result, NormCDF
+// Table result_mddcv {
+//   id int [pk, increment]
+//   experiment_id int [not null, ref: > experiment_mddcv.id]
+//   result_url text [not null]
+//   subject_id int [not null, ref: > subject.id]
+//   mean double [not null]
+//   sd double [not null]
+//   lower_asymptote double [not null]
+//   lapse_rate double [not null]
+//   created_at timestamp [not null, default: `now()`]
+// }
+
+// Table experiment_mddcw {
+//   id int [pk, increment]
+//   created_at timestamp [not null, default: `now()`]
+// }
+
+// Table experiment_mddcw_active {
+//   // id int [pk, increment]
+//   experiment_id int [not null, unique, ref: - experiment_mddcw.id]
+//   created_at timestamp [not null, default: `now()`]
+// }
+
+// Table experiment_mddcw_inactive {
+//   // id int [pk, increment]
+//   experiment_id int [not null, unique, ref: - experiment_mddcw.id]
+//   created_at timestamp [not null, default: `now()`]
+// }
+
+// Table experiment_mddcw_detail{
+//   id int [pk, increment]
+//   experiment_id int [not null, unique, ref: - experiment_mddcw.id]
+//   questplus_parameter_normcdf_id int [not null, ref: > questplus_parameter_normcdf.id]
+//   name string [not null, unique]
+//   description string [not null]
+//   azimuth int [not null, note:'0[10^-1 deg] is the front, 900[10^-1 deg] is the right side']
+//   altitude int [not null, note:'0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir']
+//   coordinate_variable_id int [not null, ref: > m_coordinate_variable.id]
+//   width int [not null, note: '[10^-1 deg]']
+//   num_trials int [not null]
+//   created_at timestamp [not null, default: `now()`]
+// }
+
+// Table experiment_mddcv {
+//   id int [pk, increment]
+//   created_at timestamp [not null, default: `now()`]
+// }
+
+// Table experiment_mddcv_active {
+//   id int [pk, increment]
+//   experiment_id int [not null, unique, ref: - experiment_mddcv.id]
+//   created_at timestamp [not null, default: `now()`]
+// }
+
+// Table experiment_mddcv_inactive {
+//   id int [pk, increment]
+//   experiment_id int [not null, unique, ref: - experiment_mddcv.id]
+//   created_at timestamp [not null, default: `now()`]
+// }
+
+// Table experiment_mddcv_detail{
 //   id int [pk, increment]
 //   name string [not null, unique]
 //   description string [not null]
@@ -78,9 +135,6 @@ Table experiment_mddcw_detail{
 //   altitude int [not null, note:'0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir']
 //   coordinate_variable_id int [not null, ref: > m_coordinate_variable.id]
 //   velocity int [not null, note: '[10^-1 deg/sec]']
-//   width_range_lower int [not null, note: '[10^-1 deg]']
-//   width_range_upper int [not null, note: '[10^-1 deg]']
-//   width_range_step int [not null, note: '[10^-1 deg]']
 //   num_trials int [not null]
 //   created_at timestamp [not null, default: `now()`]
 // }
@@ -91,11 +145,11 @@ Table questplus_parameter_normcdf {
   created_at timestamp [not null, default: `now()`]
 }
 
-Table m_coordinate_variable {
-  id int [pk]
-  type varchar(64) [not null, note: 'azimuth or altitude'] 
-  created_at timestamp [not null, default: `now()`]
-}
+// Table m_coordinate_variable {
+//   id int [pk]
+//   type varchar(64) [not null, note: 'azimuth or altitude']
+//   created_at timestamp [not null, default: `now()`]
+// }
 
 Table subject {
   id int [pk]
