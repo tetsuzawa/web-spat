@@ -14,17 +14,17 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Returns a list of active experiments.
-	// (GET /experiment/mddcw/active)
-	ListExperimentsMDDCWActive(ctx echo.Context) error
+	// (GET /experiment/mdd/active)
+	ListExperimentsMDDActive(ctx echo.Context) error
 	// Returns a list of inactive experiments.
-	// (GET /experiment/mddcw/inactive)
-	ListExperimentsMDDCWInactive(ctx echo.Context) error
+	// (GET /experiment/mdd/inactive)
+	ListExperimentsMDDInactive(ctx echo.Context) error
 	// Represents a experiment by specified ID.
-	// (GET /experiment/mddcw/{id})
-	GetExperimentMDDCWById(ctx echo.Context, id int) error
+	// (GET /experiment/mdd/{id})
+	GetExperimentMDDById(ctx echo.Context, id ExperimentId) error
 	// Register the result of the specified experiment ID.
-	// (POST /experiment/mddcw/{id}/results)
-	RegisterResultOfExperimentMDDCWById(ctx echo.Context, id int) error
+	// (POST /experiment/mdd/{id}/results)
+	RegisterResultOfExperimentMDDById(ctx echo.Context, id ExperimentId) error
 	// Returns "OK"
 	// (GET /ping)
 	Ping(ctx echo.Context) error
@@ -35,29 +35,29 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// ListExperimentsMDDCWActive converts echo context to params.
-func (w *ServerInterfaceWrapper) ListExperimentsMDDCWActive(ctx echo.Context) error {
+// ListExperimentsMDDActive converts echo context to params.
+func (w *ServerInterfaceWrapper) ListExperimentsMDDActive(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.ListExperimentsMDDCWActive(ctx)
+	err = w.Handler.ListExperimentsMDDActive(ctx)
 	return err
 }
 
-// ListExperimentsMDDCWInactive converts echo context to params.
-func (w *ServerInterfaceWrapper) ListExperimentsMDDCWInactive(ctx echo.Context) error {
+// ListExperimentsMDDInactive converts echo context to params.
+func (w *ServerInterfaceWrapper) ListExperimentsMDDInactive(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.ListExperimentsMDDCWInactive(ctx)
+	err = w.Handler.ListExperimentsMDDInactive(ctx)
 	return err
 }
 
-// GetExperimentMDDCWById converts echo context to params.
-func (w *ServerInterfaceWrapper) GetExperimentMDDCWById(ctx echo.Context) error {
+// GetExperimentMDDById converts echo context to params.
+func (w *ServerInterfaceWrapper) GetExperimentMDDById(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id ExperimentId
 
 	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
 	if err != nil {
@@ -65,15 +65,15 @@ func (w *ServerInterfaceWrapper) GetExperimentMDDCWById(ctx echo.Context) error 
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetExperimentMDDCWById(ctx, id)
+	err = w.Handler.GetExperimentMDDById(ctx, id)
 	return err
 }
 
-// RegisterResultOfExperimentMDDCWById converts echo context to params.
-func (w *ServerInterfaceWrapper) RegisterResultOfExperimentMDDCWById(ctx echo.Context) error {
+// RegisterResultOfExperimentMDDById converts echo context to params.
+func (w *ServerInterfaceWrapper) RegisterResultOfExperimentMDDById(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id int
+	var id ExperimentId
 
 	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
 	if err != nil {
@@ -81,7 +81,7 @@ func (w *ServerInterfaceWrapper) RegisterResultOfExperimentMDDCWById(ctx echo.Co
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.RegisterResultOfExperimentMDDCWById(ctx, id)
+	err = w.Handler.RegisterResultOfExperimentMDDById(ctx, id)
 	return err
 }
 
@@ -122,10 +122,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/experiment/mddcw/active", wrapper.ListExperimentsMDDCWActive)
-	router.GET(baseURL+"/experiment/mddcw/inactive", wrapper.ListExperimentsMDDCWInactive)
-	router.GET(baseURL+"/experiment/mddcw/:id", wrapper.GetExperimentMDDCWById)
-	router.POST(baseURL+"/experiment/mddcw/:id/results", wrapper.RegisterResultOfExperimentMDDCWById)
+	router.GET(baseURL+"/experiment/mdd/active", wrapper.ListExperimentsMDDActive)
+	router.GET(baseURL+"/experiment/mdd/inactive", wrapper.ListExperimentsMDDInactive)
+	router.GET(baseURL+"/experiment/mdd/:id", wrapper.GetExperimentMDDById)
+	router.POST(baseURL+"/experiment/mdd/:id/results", wrapper.RegisterResultOfExperimentMDDById)
 	router.GET(baseURL+"/ping", wrapper.Ping)
 
 }
