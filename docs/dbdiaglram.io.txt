@@ -61,7 +61,8 @@ Table experiment_mdd_detail{
   azimuth int [not null, note:'0[10^-1 deg] is the front, 900[10^-1 deg] is the right side']
   altitude int [not null, note:'0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir']
   coordinate_variable coordinate_variable [not null]
-  moving_sound_variable moving_sound_variable [not null]
+  moving_sound_constant moving_sound_constant [not null]
+  moving_sound_constant_value int [not null]
   num_trials int [not null]
   created_at timestamp [not null, default: `now()`]
 }

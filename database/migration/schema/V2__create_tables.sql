@@ -42,7 +42,8 @@ CREATE TABLE IF NOT EXISTS `experiment_mdd_detail`
     `azimuth`                        INT UNSIGNED                 NOT NULL COMMENT '0[10^-1 deg] is the front, 900[10^-1 deg] is the right side',
     `altitude`                       INT UNSIGNED                 NOT NULL COMMENT '0[10^-1 deg] is the front, 900[10^-1 deg] is the zenith, -900[10^-1 deg] is the nadir',
     `coordinate_variable`            ENUM ('azimuth', 'altitude') NOT NULL,
-    `moving_sound_variable`          ENUM ('width', 'velocity')   NOT NULL,
+    `moving_sound_constant`          ENUM ('width', 'velocity')   NOT NULL,
+    `moving_sound_constant_value`    INT UNSIGNED                 NOT NULL,
     `num_trials`                     INT UNSIGNED                 NOT NULL,
     `created_at`                     TIMESTAMP                    NOT NULL DEFAULT (now())
 ) ENGINE = InnoDB
