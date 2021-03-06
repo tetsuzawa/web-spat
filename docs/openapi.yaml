@@ -58,6 +58,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExperimentsMDD'
 
+  /experiment/mdd:
+    post:
+      operationId: createExperimentMDD
+      summary: Create a experiment by specified conditions.
+      description: Create a experiment by specified conditions. The experimet type is Movement Direction Discrimination.
+      requestBody:
+        description: Detail of experiment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentMDD'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentMDD'
+
   /experiment/mdd/{id}:
     get:
       operationId: getExperimentMDDById
@@ -202,7 +222,7 @@ components:
         param_domain:
           $ref: '#/components/schemas/ParamDomainNormCDF'
         outcome_domain:
-          $ref: '#/components/schemas/OutcomeDomainNormCDF'
+          $ref: '#/components/schemas/OutcomeDomain'
         prior:
           $ref: '#/components/schemas/PriorNormCDF'
         func:
@@ -239,24 +259,35 @@ components:
       type: object
       properties:
         mean:
-          $ref: '#/components/schemas/Mean'
+          type: array
+          items:
+            $ref: '#/components/schemas/Mean'
         sd:
-          $ref: '#/components/schemas/SD'
+          type: array
+          items:
+            $ref: '#/components/schemas/SD'
         lower_asymptote:
-          $ref: '#/components/schemas/LowerAsymptote'
+          type: array
+          items:
+            $ref: '#/components/schemas/LowerAsymptote'
         lapse_rate:
-          $ref: '#/components/schemas/LapseRate'
+          type: array
+          items:
+            $ref: '#/components/schemas/LapseRate'
       required:
         - mean
         - sd
         - lower_asymptote
         - lapse_rate
 
-    OutcomeDomainNormCDF:
+    OutcomeDomain:
       type: object
       properties:
         response:
           type: string
+          enum:
+            - 'Correct'
+            - 'Incorrect'
       required:
         - response
 

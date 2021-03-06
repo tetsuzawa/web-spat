@@ -77,17 +77,17 @@ const (
 // NumTrials defines model for NumTrials.
 type NumTrials int64
 
-// OutcomeDomainNormCDF defines model for OutcomeDomainNormCDF.
-type OutcomeDomainNormCDF struct {
+// OutcomeDomain defines model for OutcomeDomain.
+type OutcomeDomain struct {
 	Response string `json:"response"`
 }
 
 // ParamDomainNormCDF defines model for ParamDomainNormCDF.
 type ParamDomainNormCDF struct {
-	LapseRate      LapseRate      `json:"lapse_rate"`
-	LowerAsymptote LowerAsymptote `json:"lower_asymptote"`
-	Mean           Mean           `json:"mean"`
-	Sd             SD             `json:"sd"`
+	LapseRate      []LapseRate      `json:"lapse_rate"`
+	LowerAsymptote []LowerAsymptote `json:"lower_asymptote"`
+	Mean           []Mean           `json:"mean"`
+	Sd             []SD             `json:"sd"`
 }
 
 // PriorNormCDF defines model for PriorNormCDF.
@@ -123,7 +123,7 @@ const (
 // QuestPlusParameterNormCDF defines model for QuestPlusParameterNormCDF.
 type QuestPlusParameterNormCDF struct {
 	Func                  QuestPlusFunc                  `json:"func"`
-	OutcomeDomain         OutcomeDomainNormCDF           `json:"outcome_domain"`
+	OutcomeDomain         OutcomeDomain                  `json:"outcome_domain"`
 	ParamDomain           ParamDomainNormCDF             `json:"param_domain"`
 	ParamEstimationMethod QuestPlusParamEstimationMethod `json:"param_estimation_method"`
 	Prior                 PriorNormCDF                   `json:"prior"`
@@ -235,8 +235,14 @@ type Velocity int64
 // Width defines model for Width.
 type Width int64
 
+// CreateExperimentMDDJSONBody defines parameters for CreateExperimentMDD.
+type CreateExperimentMDDJSONBody ExperimentMDD
+
 // RegisterResultOfExperimentMDDByIdJSONBody defines parameters for RegisterResultOfExperimentMDDById.
 type RegisterResultOfExperimentMDDByIdJSONBody ResultMDD
+
+// CreateExperimentMDDJSONRequestBody defines body for CreateExperimentMDD for application/json ContentType.
+type CreateExperimentMDDJSONRequestBody CreateExperimentMDDJSONBody
 
 // RegisterResultOfExperimentMDDByIdJSONRequestBody defines body for RegisterResultOfExperimentMDDById for application/json ContentType.
 type RegisterResultOfExperimentMDDByIdJSONRequestBody RegisterResultOfExperimentMDDByIdJSONBody

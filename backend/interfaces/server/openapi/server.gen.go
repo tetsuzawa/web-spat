@@ -13,6 +13,9 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Create a experiment by specified conditions.
+	// (POST /experiment/mdd)
+	CreateExperimentMDD(ctx echo.Context) error
 	// Returns a list of active experiments.
 	// (GET /experiment/mdd/active)
 	ListExperimentsMDDActive(ctx echo.Context) error
@@ -33,6 +36,15 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// CreateExperimentMDD converts echo context to params.
+func (w *ServerInterfaceWrapper) CreateExperimentMDD(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.CreateExperimentMDD(ctx)
+	return err
 }
 
 // ListExperimentsMDDActive converts echo context to params.
@@ -122,6 +134,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
+	router.POST(baseURL+"/experiment/mdd", wrapper.CreateExperimentMDD)
 	router.GET(baseURL+"/experiment/mdd/active", wrapper.ListExperimentsMDDActive)
 	router.GET(baseURL+"/experiment/mdd/inactive", wrapper.ListExperimentsMDDInactive)
 	router.GET(baseURL+"/experiment/mdd/:id", wrapper.GetExperimentMDDById)
