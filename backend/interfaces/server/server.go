@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/tetsuzawa/web-spat/config"
-	"github.com/tetsuzawa/web-spat/infrastructure/persistence"
+	"github.com/tetsuzawa/web-spat/infrastructure/persistence_mock"
 	"github.com/tetsuzawa/web-spat/interfaces/server/handler"
 	"github.com/tetsuzawa/web-spat/interfaces/server/openapi"
 	"github.com/tetsuzawa/web-spat/usecase"
@@ -31,7 +31,7 @@ func Run(port int) {
 
 	// routing
 	h := handler.NewIntegratedHandler(
-		*handler.NewExperimentsHandler(usecase.NewExperimentUseCase(persistence.NewExperimentRepository(db))),
+		*handler.NewExperimentsHandler(usecase.NewExperimentUseCase(persistence_mock.NewExperimentRepository())),
 		*handler.NewUtilHandler(),
 	)
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/tetsuzawa/web-spat/interfaces/server"
 	"net/http"
 
 	"github.com/tetsuzawa/web-spat/interfaces/server/openapi"
@@ -17,12 +18,30 @@ func NewExperimentsHandler(u usecase.IExperimentUseCase) *ExperimentHandler {
 	return &ExperimentHandler{u: u}
 }
 
+// Create a experiment by specified conditions.
+// (POST /experiment/mdd)
+func (h *ExperimentHandler) CreateExperimentMDD(ctx echo.Context) error {
+	reqBody := &openapi.ExperimentMDD{}
+	if err := ctx.Bind(reqBody); err != nil {
+		return err
+	}
+	e := server.NewExperimentMDDData(reqBody)
+	e, err := h.u.CreateMDD(ctx.Request().Context(), e)
+	if err != nil {
+		return err
+	}
+	respBody := server.NewExperimentMDDOAPI(e)
+	return ctx.JSON(http.StatusOK, respBody)
+
+}
+
 // Returns a list of active experiments.
 // (GET /experiment/mdd/active)
 func (h *ExperimentHandler) ListExperimentsMDDActive(ctx echo.Context) error {
 	experimentMDDs, err := h.u.ListMDDActive(ctx.Request().Context())
 	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, err)
+		return err
+		//return ctx.JSON(http.StatusInternalServerError, err)
 	}
 	return ctx.JSON(http.StatusOK, experimentMDDs)
 }

@@ -10,6 +10,7 @@ import (
 
 // IExperimentUseCase represent UseCase of the experiments.
 type IExperimentUseCase interface {
+	CreateMDD(ctx context.Context, e *domain.ExperimentMDDData) (*domain.ExperimentMDDData, error)
 	ListMDDActive(ctx context.Context) ([]*domain.ExperimentMDDData, error)
 	ListMDDInactive(ctx context.Context) ([]*domain.ExperimentMDDData, error)
 }
@@ -20,6 +21,10 @@ type experimentUseCase struct {
 
 func NewExperimentUseCase(r repository.IExperimentRepository) IExperimentUseCase {
 	return &experimentUseCase{r: r}
+}
+
+func (u *experimentUseCase) CreateMDD(ctx context.Context, e *domain.ExperimentMDDData) (*domain.ExperimentMDDData, error) {
+	return nil, nil
 }
 
 func (u *experimentUseCase) ListMDDActive(ctx context.Context) ([]*domain.ExperimentMDDData, error) {
