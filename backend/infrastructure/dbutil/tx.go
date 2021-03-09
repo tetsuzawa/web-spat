@@ -1,9 +1,10 @@
 package dbutil
 
 import (
-	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
+	"fmt"
 	"log"
+
+	"github.com/jmoiron/sqlx"
 )
 
 // TXHandler is handler for working with transaction.
@@ -12,7 +13,7 @@ func TXHandler(db *sqlx.DB, f func(*sqlx.Tx) error) error {
 	var err error
 	tx, err := db.Beginx()
 	if err != nil {
-		return errors.Wrap(err, "start transaction failed")
+		return fmt.Errorf("start transaction failed -> %w", err)
 	}
 	defer func() {
 		if err := recover(); err != nil {
@@ -25,7 +26,7 @@ func TXHandler(db *sqlx.DB, f func(*sqlx.Tx) error) error {
 		}
 	}()
 	if err := f(tx); err != nil {
-		return errors.Wrap(err, "transaction: operation failed")
+		return fmt.Errorf("transaction: operation failed -> %w", err)
 	}
 	return nil
 }
