@@ -142,4 +142,3 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/ping", wrapper.Ping)
 
 }
-

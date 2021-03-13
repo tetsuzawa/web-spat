@@ -6,7 +6,7 @@ type IExperimentService interface {
 	ValidateExperimentMDDData(v *ExperimentMDDData) error
 }
 
-type experimentService struct {}
+type experimentService struct{}
 
 func NewExperimentService() IExperimentService {
 	return &experimentService{}

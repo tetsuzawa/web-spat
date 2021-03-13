@@ -246,4 +246,3 @@ type CreateExperimentMDDJSONRequestBody CreateExperimentMDDJSONBody
 
 // RegisterResultOfExperimentMDDByIdJSONRequestBody defines body for RegisterResultOfExperimentMDDById for application/json ContentType.
 type RegisterResultOfExperimentMDDByIdJSONRequestBody RegisterResultOfExperimentMDDByIdJSONBody
-

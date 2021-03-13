@@ -17,5 +17,5 @@ var (
 	ErrInvalidStimScale             = fmt.Errorf("invalid stim scale")
 	ErrInvalidStimSelectionMethod   = fmt.Errorf("invalid stim selection method")
 	ErrInvalidParamEstimationMethod = fmt.Errorf("invalid param estimation method")
-	ErrInvalidMovingSoundConstant = fmt.Errorf("invalid param moving sound constant")
+	ErrInvalidMovingSoundConstant   = fmt.Errorf("invalid param moving sound constant")
 )
