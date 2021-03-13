@@ -13,6 +13,7 @@ type IExperimentUseCase interface {
 	CreateMDD(ctx context.Context, e *domain.ExperimentMDDData) (*domain.ExperimentMDDData, error)
 	ListMDDActive(ctx context.Context) ([]*domain.ExperimentMDDData, error)
 	ListMDDInactive(ctx context.Context) ([]*domain.ExperimentMDDData, error)
+	FindMDDById(ctx context.Context, id domain.ExperimentIdData) (*domain.ExperimentMDDData, error)
 }
 
 type experimentUseCase struct {
@@ -50,4 +51,12 @@ func (u *experimentUseCase) ListMDDInactive(ctx context.Context) ([]*domain.Expe
 		return nil, fmt.Errorf("repositoy error -> %w", err)
 	}
 	return experimentMDDs, nil
+}
+
+func (u *experimentUseCase) FindMDDById(ctx context.Context, id domain.ExperimentIdData) (*domain.ExperimentMDDData, error) {
+	experimentMDD, err := u.r.FindByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("repositoy error -> %w", err)
+	}
+	return experimentMDD, nil
 }

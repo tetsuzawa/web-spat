@@ -39,9 +39,12 @@ func (h *ExperimentHandler) ListExperimentsMDDActive(ctx echo.Context) error {
 	experimentMDDs, err := h.u.ListMDDActive(ctx.Request().Context())
 	if err != nil {
 		return err
-		//return ctx.JSON(http.StatusInternalServerError, err)
 	}
-	return ctx.JSON(http.StatusOK, experimentMDDs)
+	experimentMDDOAPIs := make(openapi.ExperimentsMDD, len(experimentMDDs))
+	for i, v := range experimentMDDs {
+		experimentMDDOAPIs[i] = *NewExperimentMDDOAPI(v)
+	}
+	return ctx.JSON(http.StatusOK, experimentMDDOAPIs)
 }
 
 // Returns a list of inactive experiments.
@@ -49,16 +52,24 @@ func (h *ExperimentHandler) ListExperimentsMDDActive(ctx echo.Context) error {
 func (h *ExperimentHandler) ListExperimentsMDDInactive(ctx echo.Context) error {
 	experimentMDDs, err := h.u.ListMDDInactive(ctx.Request().Context())
 	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, err)
+		return err
 	}
-	return ctx.JSON(http.StatusOK, experimentMDDs)
+	experimentMDDOAPIs := make(openapi.ExperimentsMDD, len(experimentMDDs))
+	for i, v := range experimentMDDs {
+		experimentMDDOAPIs[i] = *NewExperimentMDDOAPI(v)
+	}
+	return ctx.JSON(http.StatusOK, experimentMDDOAPIs)
 }
 
 // Represents a experiment by specified ID.
 // (GET /experiment/mdd/{id})
 func (h *ExperimentHandler) GetExperimentMDDById(ctx echo.Context, id openapi.ExperimentId) error {
-	// TODO
-	return nil
+	idData := NewExperimentIdData(id)
+	experimentMDD, err := h.u.FindMDDById(ctx.Request().Context(), idData)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusOK, NewExperimentMDDOAPI(experimentMDD))
 }
 
 // Register the result of the specified experiment ID.

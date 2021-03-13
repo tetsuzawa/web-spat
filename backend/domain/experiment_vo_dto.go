@@ -2,6 +2,12 @@ package domain
 
 import "fmt"
 
+type ExperimentIdData uint64
+
+func NewExperimentIDData(v ExperimentId) ExperimentIdData {
+	return ExperimentIdData(v)
+}
+
 type ExperimentMDDData struct {
 	Id                        uint64                        `db:"id"`
 	QuestPlusParameterNormCDF QuestPlusParameterNormCDFData `db:"quest_plus_parameter_norm_cdf"`
