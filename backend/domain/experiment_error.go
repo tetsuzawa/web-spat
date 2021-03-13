@@ -18,4 +18,7 @@ var (
 	ErrInvalidStimSelectionMethod   = fmt.Errorf("invalid stim selection method")
 	ErrInvalidParamEstimationMethod = fmt.Errorf("invalid param estimation method")
 	ErrInvalidMovingSoundConstant   = fmt.Errorf("invalid param moving sound constant")
+	ErrInvalidSex                   = fmt.Errorf("invalid sex")
+	ErrInvalidRotationDirection     = fmt.Errorf("invalid rotation direction")
+	ErrInvalidResponse              = fmt.Errorf("invalid response")
 )

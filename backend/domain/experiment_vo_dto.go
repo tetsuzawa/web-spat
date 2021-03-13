@@ -239,18 +239,18 @@ func NewPriorNormCDFFromData(v *PriorNormCDFData) (*PriorNormCDF, error) {
 }
 
 type QuestPlusResultNormCDFData struct {
-	NumTrials                 uint64  `db:"num_trials"`
-	Width                     uint64  `db:"width"`
-	Velocity                  uint64  `db:"velocity"`
-	Azimuth                   uint64  `db:"azimuth"`
-	Altitude                  int64   `db:"altitude"`
-	ActualRotationDirection   string  `db:"actual_rotation_direction"`
-	AnsweredRotationDirection string  `db:"answered_rotation_direction"`
-	Response                  string  `db:"response"`
-	MeanEstimation            float64 `db:"mean_estimation"`
-	SDEstimation              float64 `db:"sd_estimation"`
-	LowerAsymptoteEstimation  float64 `db:"lower_asymptote_estimation"`
-	LapseRateEstimation       float64 `db:"lapse_rate_estimation"`
+	NumTrials                 uint64  `json:"num_trials" db:"num_trials"`
+	Width                     uint64  `json:"width" db:"width"`
+	Velocity                  uint64  `json:"velocity" db:"velocity"`
+	Azimuth                   uint64  `json:"azimuth" db:"azimuth"`
+	Altitude                  int64   `json:"altitude" db:"altitude"`
+	ActualRotationDirection   string  `json:"actual_rotation_direction" db:"actual_rotation_direction"`
+	AnsweredRotationDirection string  `json:"answered_rotation_direction" db:"answered_rotation_direction"`
+	Response                  string  `json:"response" db:"response"`
+	MeanEstimation            float64 `json:"mean_estimation" db:"mean_estimation"`
+	SDEstimation              float64 `json:"sd_estimation" db:"sd_estimation"`
+	LowerAsymptoteEstimation  float64 `json:"lower_asymptote_estimation" db:"lower_asymptote_estimation"`
+	LapseRateEstimation       float64 `json:"lapse_rate_estimation" db:"lapse_rate_estimation"`
 }
 
 func NewQuestPlusResultNormCDFData(v *QuestPlusResultNormCDF) *QuestPlusResultNormCDFData {
@@ -270,14 +270,31 @@ func NewQuestPlusResultNormCDFData(v *QuestPlusResultNormCDF) *QuestPlusResultNo
 	}
 }
 
+func NewQuestPlusResultNormCDFFromData(v *QuestPlusResultNormCDFData) (*QuestPlusResultNormCDF, error) {
+	return NewQuestPlusResultNormCDF(
+		v.NumTrials,
+		v.Width,
+		v.Velocity,
+		v.Azimuth,
+		v.Altitude,
+		v.ActualRotationDirection,
+		v.AnsweredRotationDirection,
+		v.Response,
+		v.MeanEstimation,
+		v.SDEstimation,
+		v.LowerAsymptoteEstimation,
+		v.LapseRateEstimation,
+	)
+}
+
 type ResultMDDData struct {
-	ExperimentMDD  ExperimentMDDData            `db:"experiment_MDD"`
-	ResultDetail   []QuestPlusResultNormCDFData `db:"result_detail"`
-	Subject        SubjectData                  `db:"subject"`
-	Mean           float64                      `db:"mean"`
-	Sd             float64                      `db:"sd"`
-	LowerAsymptote float64                      `db:"lower_asymptote"`
-	LapseRate      float64                      `db:"lapse_rate"`
+	ExperimentMDD  ExperimentMDDData            `json:"experiment_mdd" db:"experiment_mdd"`
+	ResultDetail   []QuestPlusResultNormCDFData `json:"result_detail" db:"result_detail"`
+	Subject        SubjectData                  `json:"subject" db:"subject"`
+	Mean           float64                      `json:"mean" db:"mean"`
+	Sd             float64                      `json:"sd" db:"sd"`
+	LowerAsymptote float64                      `json:"lower_asymptote" db:"lower_asymptote"`
+	LapseRate      float64                      `json:"lapse_rate" db:"lapse_rate"`
 }
 
 func NewResultMDDData(v *ResultMDD) *ResultMDDData {
@@ -297,6 +314,48 @@ func NewResultMDDData(v *ResultMDD) *ResultMDDData {
 	}
 }
 
+func NewResultMDDFromData(v *ResultMDDData) (*ResultMDD, error) {
+	experimentMDDDO, err := NewExperimentMDDFromData(&v.ExperimentMDD)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ResultMDD -> %w", err)
+	}
+
+	resultDetailDO := make([]QuestPlusResultNormCDF, len(v.ResultDetail))
+	for i, x := range v.ResultDetail {
+		q, err := NewQuestPlusResultNormCDFFromData(&x)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create ResultMDD -> %w", err)
+		}
+		resultDetailDO[i] = *q
+	}
+	subjectDO, err := NewSubjectFromData(&v.Subject)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ResultMDD -> %w", err)
+	}
+	meanDO := NewMean(v.Mean)
+	sdDO, err := NewSD(v.Sd)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of ResultMDD: SD-> %w", err)
+	}
+	lowerAsymptoteDO, err := NewLowerAsymptote(v.LowerAsymptote)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of ResultMDD: LowerAsymptote -> %w", err)
+	}
+	lapseRateDO, err := NewLapseRate(v.LapseRate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of ResultMDD: LapseRate -> %w", err)
+	}
+	return &ResultMDD{
+		ExperimentMDD:  *experimentMDDDO,
+		ResultDetail:   resultDetailDO,
+		Subject:        *subjectDO,
+		Mean:           meanDO,
+		SD:             sdDO,
+		LowerAsymptote: lowerAsymptoteDO,
+		LapseRate:      lapseRateDO,
+	}, nil
+}
+
 type SubjectData struct {
 	Sex                    string `db:"sex"`
 	Age                    uint64 `db:"age"`
@@ -309,4 +368,16 @@ func NewSubjectData(v *Subject) *SubjectData {
 		Age:                    uint64(v.Age),
 		DeafAndHearingImpaired: bool(v.DeafAndHearingImpaired),
 	}
+}
+
+func NewSubjectFromData(v *SubjectData) (*Subject, error) {
+	sexDO, err := NewSex(v.Sex)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Subect -> %w", err)
+	}
+	return &Subject{
+		Sex:                    sexDO,
+		Age:                    NewAge(v.Age),
+		DeafAndHearingImpaired: NewDeafAndHearingImpaired(v.DeafAndHearingImpaired),
+	}, nil
 }

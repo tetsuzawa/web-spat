@@ -1,6 +1,8 @@
 package domain
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type ExperimentId uint64
 
@@ -332,6 +334,16 @@ func NewOutcomeDomain() *OutcomeDomain {
 
 type Response string
 
+func NewResponse(v string) (Response, error) {
+	if v == string(ResponseCorrect) {
+		return ResponseCorrect, nil
+	} else if v == string(ResponseIncorrect) {
+		return ResponseIncorrect, nil
+	} else {
+		return "", ErrInvalidResponse
+	}
+}
+
 const (
 	ResponseCorrect   = Response("correct")
 	ResponseIncorrect = Response("incorrect")
@@ -467,11 +479,86 @@ type QuestPlusResultNormCDF struct {
 	LapseRateEstimation       LapseRate
 }
 
+func NewQuestPlusResultNormCDF(
+	numTrials uint64,
+	width uint64,
+	velocity uint64,
+	azimuth uint64,
+	altitude int64,
+	actualRotationDirection string,
+	answeredRotationDirection string,
+	response string,
+	meanEstimation float64,
+	sdEstimation float64,
+	lowerAsymptoteEstimation float64,
+	lapseRateEstimation float64,
+) (*QuestPlusResultNormCDF, error) {
+	azimuthDO, err := NewAzimuth(azimuth)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF: Azimuth -> %w", err)
+	}
+	altitudeDO, err := NewAltitude(altitude)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF: Altitude -> %w", err)
+	}
+	actualRotationDirectionDO, err := NewRotationDirection(actualRotationDirection)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF: ActualRotationDirection -> %w", err)
+	}
+	answeredRotationDirectionDO, err := NewRotationDirection(answeredRotationDirection)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF: AnsweredRotationDirection -> %w", err)
+	}
+	responseDO, err := NewResponse(response)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF:  Response -> %w", err)
+	}
+	meanDO := NewMean(meanEstimation)
+	sdDO, err := NewSD(sdEstimation)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF:  SD-> %w", err)
+	}
+	lowerAsymptoteDO, err := NewLowerAsymptote(lowerAsymptoteEstimation)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF:  LowerAsymptote -> %w", err)
+	}
+	lapseRateDO, err := NewLapseRate(lapseRateEstimation)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF:  LapseRate -> %w", err)
+	}
+
+	return &QuestPlusResultNormCDF{
+		NumTrials:                 NewNumTrials(numTrials),
+		Width:                     NewWidth(width),
+		Velocity:                  NewVelocity(velocity),
+		Azimuth:                   azimuthDO,
+		Altitude:                  altitudeDO,
+		ActualRotationDirection:   actualRotationDirectionDO,
+		AnsweredRotationDirection: answeredRotationDirectionDO,
+		Response:                  responseDO,
+		MeanEstimation:            meanDO,
+		SDEstimation:              sdDO,
+		LowerAsymptoteEstimation:  lowerAsymptoteDO,
+		LapseRateEstimation:       lapseRateDO,
+	}, nil
+
+}
+
 type RotationDirection string
 
+func NewRotationDirection(v string) (RotationDirection, error) {
+	if v == string(RotationDirectionPositive) {
+		return RotationDirectionPositive, nil
+	} else if v == string(RotationDirectionNegative) {
+		return RotationDirectionNegative, nil
+	} else {
+		return "", ErrInvalidRotationDirection
+	}
+}
+
 const (
-	RotationDirectionPositive = "positive"
-	RotationDirectionNegative = "negative"
+	RotationDirectionPositive = RotationDirection("positive")
+	RotationDirectionNegative = RotationDirection("negative")
 )
 
 type ResultMDD struct {
@@ -484,20 +571,93 @@ type ResultMDD struct {
 	LapseRate      LapseRate
 }
 
+func NewResultMDD(
+	experimentMDD ExperimentMDD,
+	resultDetail []QuestPlusResultNormCDF,
+	subject Subject,
+	mean float64,
+	sd float64,
+	lowerAsymptote float64,
+	lapseRate float64,
+) (*ResultMDD, error) {
+	meanDO := NewMean(mean)
+	sdDO, err := NewSD(sd)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF: SD-> %w", err)
+	}
+	lowerAsymptoteDO, err := NewLowerAsymptote(lowerAsymptote)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF: LowerAsymptote -> %w", err)
+	}
+	lapseRateDO, err := NewLapseRate(lapseRate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of QuestPlusResultNormCDF: LapseRate -> %w", err)
+	}
+	return &ResultMDD{
+		ExperimentMDD:  experimentMDD,
+		ResultDetail:   resultDetail,
+		Subject:        subject,
+		Mean:           meanDO,
+		SD:             sdDO,
+		LowerAsymptote: lowerAsymptoteDO,
+		LapseRate:      lapseRateDO,
+	}, nil
+}
+
 type Subject struct {
 	Sex                    Sex // ISO5218
 	Age                    Age
 	DeafAndHearingImpaired DeafAndHearingImpaired
 }
 
+func NewSubject(sex string, age uint64, deafAndHearingImpaired bool) (*Subject, error) {
+	sexDO, err := NewSex(sex)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create property of Subject: Sex -> %w", err)
+	}
+	return &Subject{
+		Sex:                    sexDO,
+		Age:                    NewAge(age),
+		DeafAndHearingImpaired: NewDeafAndHearingImpaired(deafAndHearingImpaired),
+	}, nil
+}
+
 //'0: not known, 1: mail, 2: female, 9: not applicable. ISO 5218'
 type Sex string
 
+func NewSex(v string) (Sex, error) {
+	if v == string(SexNotKnown) {
+		return SexNotKnown, nil
+	} else if v == string(SexMale) {
+		return SexMale, nil
+	} else if v == string(SexFemale) {
+		return SexFemale, nil
+	} else if v == string(SexNotApplicable) {
+		return SexNotApplicable, nil
+	} else {
+		return "", ErrInvalidSex
+	}
+}
+
+func NewSexByDescription(v string) (Sex, error) {
+	if v == "not known" {
+		return SexNotKnown, nil
+	} else if v == "male" {
+		return SexMale, nil
+	} else if v == "female" {
+		return SexFemale, nil
+	} else if v == "not applicable" {
+		return SexNotApplicable, nil
+	} else {
+		return "", ErrInvalidSex
+	}
+}
+
 const (
-	SexNotKnown      = "0"
-	SexMale          = "1"
-	SexFemale        = "2"
-	SexNotApplicable = "9"
+	SexNotKnown      = Sex("0")
+	SexMale          = Sex("1")
+	SexFemale        = Sex("2")
+	SexNotApplicable = Sex("9")
 )
 
 type Age uint64
@@ -507,3 +667,7 @@ func NewAge(v uint64) Age {
 }
 
 type DeafAndHearingImpaired bool
+
+func NewDeafAndHearingImpaired(v bool) DeafAndHearingImpaired {
+	return DeafAndHearingImpaired(v)
+}

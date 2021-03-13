@@ -74,7 +74,16 @@ func (h *ExperimentHandler) GetExperimentMDDById(ctx echo.Context, id openapi.Ex
 
 // Register the result of the specified experiment ID.
 // (POST /experiment/mdd/{id}/results)
-func (h *ExperimentHandler) RegisterResultOfExperimentMDDById(ctx echo.Context, id openapi.ExperimentId) error {
-	// TODO
-	return nil
+func (h *ExperimentHandler) RegisterExperimentMDDResultById(ctx echo.Context, id openapi.ExperimentId) error {
+	reqBody := &openapi.ResultMDD{}
+	if err := ctx.Bind(reqBody); err != nil {
+		return err
+	}
+	r := NewResultMDDData(reqBody)
+	r, err := h.u.CreateMDDResult(ctx.Request().Context(), r)
+	if err != nil {
+		return err
+	}
+	respBody := NewResultMDDOAPI(r)
+	return ctx.JSON(http.StatusOK, respBody)
 }
