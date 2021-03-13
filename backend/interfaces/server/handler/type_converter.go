@@ -5,6 +5,10 @@ import (
 	"github.com/tetsuzawa/web-spat/interfaces/server/openapi"
 )
 
+func NewExperimentIdData(v openapi.ExperimentId) domain.ExperimentIdData {
+	return domain.ExperimentIdData(v)
+}
+
 func NewExperimentMDDData(v *openapi.ExperimentMDD) *domain.ExperimentMDDData {
 	return &domain.ExperimentMDDData{
 		Id:                        uint64(v.Id),

@@ -12,4 +12,5 @@ type IExperimentRepository interface {
 	CreateMDD(ctx context.Context, e *domain.ExperimentMDDData) (*domain.ExperimentMDDData, error)
 	ListMDDActive(ctx context.Context) ([]*domain.ExperimentMDDData, error)
 	ListMDDInactive(ctx context.Context) ([]*domain.ExperimentMDDData, error)
+	FindByID(ctx context.Context, id domain.ExperimentIdData) (*domain.ExperimentMDDData, error)
 }

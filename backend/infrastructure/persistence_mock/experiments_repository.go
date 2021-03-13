@@ -2,6 +2,7 @@ package persistence_mock
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -140,7 +141,6 @@ FROM ex
 	for rows.Next() {
 		e := &domain.ExperimentMDDData{}
 		var qpParamURL string
-		//rows.Scanの代わりにrows.StructScanを使う
 		err := rows.Scan(e.Id, e.Name, e.Description, e.Azimuth, e.Altitude, e.CoordinateVariable, e.MovingSoundConstant, e.MovingSoundConstantValue, e.NumTrials, qpParamURL)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan ExperimentMDDData -> %w", err)
@@ -181,7 +181,6 @@ FROM ex
 	for rows.Next() {
 		e := &domain.ExperimentMDDData{}
 		var qpParamURL string
-		//rows.Scanの代わりにrows.StructScanを使う
 		err := rows.Scan(e.Id, e.Name, e.Description, e.Azimuth, e.Altitude, e.CoordinateVariable, e.MovingSoundConstant, e.MovingSoundConstantValue, e.NumTrials, qpParamURL)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan ExperimentMDDData -> %w", err)
@@ -200,4 +199,42 @@ FROM ex
 		experiments = append(experiments, e)
 	}
 	return experiments, nil
+}
+
+
+func (r *experimentRepository)FindByID(ctx context.Context, id domain.ExperimentIdData) (*domain.ExperimentMDDData, error){
+	row := r.db.QueryRowxContext(ctx, `
+WITH ex AS (
+    SELECT * from experiment_mdd_detail AS ex_detail
+    INNER JOIN experiment_mdd_inactive AS ex_inactive ON ex_detail.experiment_id = ex_inactive.experiment_id
+    LEFT JOIN questplus_parameter_normcdf AS qp ON ex_detail.questplus_parameter_normcdf_id = qp.id
+    WHERE ex_detail.experiment_id = ?
+)
+
+SELECT experiment_id, name, description, azimuth, altitude, coordinate_variable, moving_sound_constant, moving_sound_constant_value, num_trials, questplus_parameter_json_url
+FROM ex
+`,id)
+	if row.Err()==sql.ErrNoRows{
+		return nil,nil
+	}
+
+	e := &domain.ExperimentMDDData{}
+	var qpParamURL string
+	err := row.Scan(e.Id, e.Name, e.Description, e.Azimuth, e.Altitude, e.CoordinateVariable, e.MovingSoundConstant, e.MovingSoundConstantValue, e.NumTrials, qpParamURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to scan ExperimentMDDData -> %w", err)
+	}
+	f, err := os.Open(qpParamURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open QuestPlusParameter file -> %w", err)
+	}
+	b, err := io.ReadAll(f)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read QuestPlusParameter file -> %w", err)
+	}
+	if err := json.Unmarshal(b, &e.QuestPlusParameterNormCDF); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal QuestPlusParameter -> %w", err)
+	}
+	return e, nil
+
 }
