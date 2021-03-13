@@ -62,6 +62,8 @@ BACKEND_SERVICE:=backend
 backend/shell:
 	docker-compose exec $(BACKEND_SERVICE) bash
 
+openapi/install/oapi-codegen:
+	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 
 openapi/gen/backend:
 	@mkdir -p ./backend/interfaces/server/openapi

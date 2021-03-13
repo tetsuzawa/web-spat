@@ -1,5 +1,7 @@
 package domain
 
+import "fmt"
+
 type ExperimentMDDData struct {
 	Id                        uint64                        `db:"id"`
 	QuestPlusParameterNormCDF QuestPlusParameterNormCDFData `db:"quest_plus_parameter_norm_cdf"`
@@ -28,15 +30,59 @@ func NewExperimentMDDData(v *ExperimentMDD) *ExperimentMDDData {
 	}
 }
 
+func NewExperimentMDDFromData(v *ExperimentMDDData) (*ExperimentMDD, error) {
+	questPlusParameterNormCDFVO, err := NewQuestPlusParameterNormCDFFromData(&v.QuestPlusParameterNormCDF)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ExperimentMDD -> %w", err)
+	}
+	experimentNameDO, err := NewExperimentName(v.Name)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ExperimentMDD -> %w", err)
+	}
+	experimentDescriptionDO, err := NewExperimentDescription(v.Description)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ExperimentMDD -> %w", err)
+	}
+	experimentAzimuthDO, err := NewAzimuth(v.Azimuth)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ExperimentMDD -> %w", err)
+	}
+	experimentAltitudeDO, err := NewAltitude(v.Altitude)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ExperimentMDD -> %w", err)
+	}
+	coordinateVariableDO, err := NewCoordinateVariable(v.CoordinateVariable)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ExperimentMDD -> %w", err)
+	}
+	movingSoundConstantDO, err := NewMovingSoundConstant(v.CoordinateVariable)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ExperimentMDD -> %w", err)
+	}
+
+	return &ExperimentMDD{
+		Id:                        NewExperimentId(v.Id),
+		QuestPlusParameterNormCDF: *questPlusParameterNormCDFVO,
+		Name:                      experimentNameDO,
+		Description:               experimentDescriptionDO,
+		Azimuth:                   experimentAzimuthDO,
+		Altitude:                  experimentAltitudeDO,
+		CoordinateVariable:        coordinateVariableDO,
+		MovingSoundConstant:       movingSoundConstantDO,
+		MovingSoundConstantValue:  NewMovingSoundConstantValue(v.MovingSoundConstantValue),
+		NumTrials:                 NewNumTrials(v.NumTrials),
+	}, nil
+}
+
 type QuestPlusParameterNormCDFData struct {
-	StimDomain            StimDomainNormCDFData  `db:"stim_domain"`
-	ParamDomain           ParamDomainNormCDFData `db:"param_domain"`
-	OutcomeDomain         OutcomeDomainData      `db:"outcome_domain"`
-	Prior                 PriorNormCDFData       `db:"prior"`
-	Func                  string                 `db:"func"`
-	StimScale             string                 `db:"stim_scale"`
-	StimSelectionMethod   string                 `db:"stim_selection_method"`
-	ParamEstimationMethod string                 `db:"param_estimation_method"`
+	StimDomain            StimDomainNormCDFData  `json:"stim_domain" db:"stim_domain"`
+	ParamDomain           ParamDomainNormCDFData `json:"param_domain" db:"param_domain"`
+	OutcomeDomain         OutcomeDomainData      `json:"outcome_domain" db:"outcome_domain"`
+	Prior                 PriorNormCDFData       `json:"prior" db:"prior"`
+	Func                  string                 `json:"func" db:"func"`
+	StimScale             string                 `json:"stim_scale" db:"stim_scale"`
+	StimSelectionMethod   string                 `json:"stim_selection_method" db:"stim_selection_method"`
+	ParamEstimationMethod string                 `json:"param_estimation_method" db:"param_estimation_method"`
 }
 
 func NewQuestPlusParameterNormCDFData(v *QuestPlusParameterNormCDF) *QuestPlusParameterNormCDFData {
@@ -52,8 +98,45 @@ func NewQuestPlusParameterNormCDFData(v *QuestPlusParameterNormCDF) *QuestPlusPa
 	}
 }
 
+func NewQuestPlusParameterNormCDFFromData(v *QuestPlusParameterNormCDFData) (*QuestPlusParameterNormCDF, error) {
+	paramDomainDO, err := NewParamDomainNormCDFFromData(&v.ParamDomain)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create QuestPlusParameterNormCDFData -> %w", err)
+	}
+	priorNormCDFDO, err := NewPriorNormCDFFromData(&v.Prior)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create QuestPlusParameterNormCDFData -> %w", err)
+	}
+	funcDO, err := NewFunc(v.Func)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create QuestPlusParameterNormCDFData -> %w", err)
+	}
+	stimScaleDO, err := NewStimScale(v.Func)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create QuestPlusParameterNormCDFData -> %w", err)
+	}
+	stimSelectionMethodDO, err := NewStimSelectionMethod(v.Func)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create QuestPlusParameterNormCDFData -> %w", err)
+	}
+	paramEstimationMethodDO, err := NewParamEstimationMethod(v.Func)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create QuestPlusParameterNormCDFData -> %w", err)
+	}
+	return &QuestPlusParameterNormCDF{
+		StimDomain:            *NewStimDomainNormCDF(v.StimDomain.Intensity),
+		ParamDomain:           *paramDomainDO,
+		OutcomeDomain:         *NewOutcomeDomain(),
+		Prior:                 *priorNormCDFDO,
+		Func:                  funcDO,
+		StimScale:             stimScaleDO,
+		StimSelectionMethod:   stimSelectionMethodDO,
+		ParamEstimationMethod: paramEstimationMethodDO,
+	}, nil
+}
+
 type StimDomainNormCDFData struct {
-	Intensity []float64 `db:"intensity"`
+	Intensity []float64 `json:"intensity" db:"intensity"`
 }
 
 func NewStimDomainNormCDFData(v *StimDomainNormCDF) *StimDomainNormCDFData {
@@ -63,28 +146,28 @@ func NewStimDomainNormCDFData(v *StimDomainNormCDF) *StimDomainNormCDFData {
 }
 
 type ParamDomainNormCDFData struct {
-	Mean           []float64 `db:"mean"`
-	SD             []float64 `db:"sd"`
-	LowerAsymptote []float64 `db:"lower_asymptote"`
-	LapseRate      []float64 `db:"lapse_rate"`
+	Mean           []float64 `json:"mean" db:"mean"`
+	SD             []float64 `json:"sd" db:"sd"`
+	LowerAsymptote []float64 `json:"lower_asymptote" db:"lower_asymptote"`
+	LapseRate      []float64 `json:"lapse_rate" db:"lapse_rate"`
 }
 
 func NewParamDomainNormCDFData(v *ParamDomainNormCDF) *ParamDomainNormCDFData {
 	mean := make([]float64, len(v.Mean))
-	for _, x := range v.Mean {
-		mean = append(mean, float64(x))
+	for i, x := range v.Mean {
+		mean[i] = float64(x)
 	}
 	sd := make([]float64, len(v.SD))
-	for _, x := range v.SD {
-		sd = append(sd, float64(x))
+	for i, x := range v.SD {
+		sd[i] = float64(x)
 	}
 	lowerAsymptote := make([]float64, len(v.LowerAsymptote))
-	for _, x := range v.LowerAsymptote {
-		lowerAsymptote = append(lowerAsymptote, float64(x))
+	for i, x := range v.LowerAsymptote {
+		lowerAsymptote[i] = float64(x)
 	}
 	lapseRate := make([]float64, len(v.LapseRate))
-	for _, x := range v.LapseRate {
-		lapseRate = append(lapseRate, float64(x))
+	for i, x := range v.LapseRate {
+		lapseRate[i] = float64(x)
 	}
 
 	return &ParamDomainNormCDFData{
@@ -95,47 +178,58 @@ func NewParamDomainNormCDFData(v *ParamDomainNormCDF) *ParamDomainNormCDFData {
 	}
 }
 
+func NewParamDomainNormCDFFromData(v *ParamDomainNormCDFData) (*ParamDomainNormCDF, error) {
+	return NewParamDomainNormCDF(v.Mean, v.SD, v.LowerAsymptote, v.LapseRate)
+}
+
 type OutcomeDomainData struct {
-	Response string `db:"response"`
+	Response []string `json:"response" db:"response"`
 }
 
 func NewOutcomeDomainData(v *OutcomeDomain) *OutcomeDomainData {
+	response := make([]string, len(v.Response))
+	for i, x := range v.Response {
+		response[i] = string(x)
+	}
 	return &OutcomeDomainData{
-		Response: string(v.Response),
+		Response: response,
 	}
 }
 
 type PriorNormCDFData struct {
-	Mean           []float64 `db:"mean"`
-	SD             []float64 `db:"sd"`
-	LowerAsymptote []float64 `db:"lower_asymptote"`
-	LapseRate      []float64 `db:"lapse_rate"`
+	Mean           []float64 `json:"mean" db:"mean"`
+	SD             []float64 `json:"sd" db:"sd"`
+	LowerAsymptote []float64 `json:"lower_asymptote" db:"lower_asymptote"`
+	LapseRate      []float64 `json:"lapse_rate" db:"lapse_rate"`
 }
 
 func NewPriorNormCDFData(v *PriorNormCDF) *PriorNormCDFData {
 	mean := make([]float64, len(v.Mean))
-	for _, x := range v.Mean {
-		mean = append(mean, float64(x))
+	for i, x := range v.Mean {
+		mean[i] = float64(x)
 	}
 	sd := make([]float64, len(v.SD))
-	for _, x := range v.SD {
-		sd = append(sd, float64(x))
+	for i, x := range v.SD {
+		sd[i] = float64(x)
 	}
 	lowerAsymptote := make([]float64, len(v.LowerAsymptote))
-	for _, x := range v.LowerAsymptote {
-		lowerAsymptote = append(lowerAsymptote, float64(x))
+	for i, x := range v.LowerAsymptote {
+		lowerAsymptote[i] = float64(x)
 	}
 	lapseRate := make([]float64, len(v.LapseRate))
-	for _, x := range v.LapseRate {
-		lapseRate = append(lapseRate, float64(x))
+	for i, x := range v.LapseRate {
+		lapseRate[i] = float64(x)
 	}
-
 	return &PriorNormCDFData{
 		Mean:           mean,
 		SD:             sd,
 		LowerAsymptote: lowerAsymptote,
 		LapseRate:      lapseRate,
 	}
+}
+
+func NewPriorNormCDFFromData(v *PriorNormCDFData) (*PriorNormCDF, error) {
+	return NewPriorNormCDF(v.Mean, v.SD, v.LowerAsymptote, v.LapseRate)
 }
 
 type QuestPlusResultNormCDFData struct {
@@ -182,9 +276,9 @@ type ResultMDDData struct {
 
 func NewResultMDDData(v *ResultMDD) *ResultMDDData {
 	resultDetailData := make([]QuestPlusResultNormCDFData, len(v.ResultDetail))
-	for _, x := range v.ResultDetail {
+	for i, x := range v.ResultDetail {
 		q := NewQuestPlusResultNormCDFData(&x)
-		resultDetailData = append(resultDetailData, *q)
+		resultDetailData[i] = *q
 	}
 	return &ResultMDDData{
 		ExperimentMDD:  *NewExperimentMDDData(&v.ExperimentMDD),
