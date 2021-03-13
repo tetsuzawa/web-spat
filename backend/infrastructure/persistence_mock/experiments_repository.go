@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/google/uuid"
@@ -120,81 +121,83 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 }
 
 func (r *experimentRepository) ListMDDActive(ctx context.Context) ([]*domain.ExperimentMDDData, error) {
-	experiments := []*domain.ExperimentMDDData{
-		{
-			QuestPlusParameterNormCDF: domain.QuestPlusParameterNormCDFData{
-				StimDomain: domain.StimDomainNormCDFData{
-					Intensity: []float64{1, 2, 3},
-				},
-				ParamDomain: domain.ParamDomainNormCDFData{
-					Mean:           []float64{7, 8, 9},
-					SD:             []float64{4, 5, 6},
-					LowerAsymptote: []float64{0.5},
-					LapseRate:      []float64{0.01, 0.02, 0.03},
-				},
-				OutcomeDomain: domain.OutcomeDomainData{
-					Response: []string{"correct", "incorrect"},
-				},
-				Prior: domain.PriorNormCDFData{
-					Mean:           []float64{0.32, 0.32, 0.32},
-					SD:             []float64{0.32, 0.32, 0.32},
-					LowerAsymptote: []float64{0.32},
-					LapseRate:      []float64{0.32, 0.32, 0.32},
-				},
-				Func:                  string(domain.FuncNormCDF),
-				StimScale:             string(domain.StimScaleLinear),
-				StimSelectionMethod:   string(domain.StimSelectionMethodMinEntropy),
-				ParamEstimationMethod: string(domain.ParamEstimationMethodMean),
-			},
-			Name:                     "移動方向弁別 角度",
-			Description:              "角度",
-			Azimuth:                  450,
-			Altitude:                 0,
-			CoordinateVariable:       "azimuth",
-			MovingSoundConstant:      "velocity",
-			MovingSoundConstantValue: 800,
-			NumTrials:                100,
-		},
+	rows, err := r.db.QueryxContext(ctx, `
+WITH ex AS (
+    SELECT * from experiment_mdd_detail AS ex_detail
+    INNER JOIN experiment_mdd_active AS ex_active ON ex_detail.experiment_id = ex_active.experiment_id
+    LEFT JOIN questplus_parameter_normcdf AS qp ON ex_detail.questplus_parameter_normcdf_id = qp.id
+)
+
+SELECT experiment_id, name, description, azimuth, altitude, coordinate_variable, moving_sound_constant, moving_sound_constant_value, num_trials, questplus_parameter_json_url
+FROM ex
+`)
+	if err != nil {
+		return nil, fmt.Errorf("failed to exec query -> %w", err)
+	}
+	defer rows.Close()
+
+	var experiments []*domain.ExperimentMDDData
+	for rows.Next() {
+		e := &domain.ExperimentMDDData{}
+		var qpParamURL string
+		//rows.Scanの代わりにrows.StructScanを使う
+		err := rows.Scan(e.Id, e.Name, e.Description, e.Azimuth, e.Altitude, e.CoordinateVariable, e.MovingSoundConstant, e.MovingSoundConstantValue, e.NumTrials, qpParamURL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan ExperimentMDDData -> %w", err)
+		}
+		f, err := os.Open(qpParamURL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open QuestPlusParameter file -> %w", err)
+		}
+		b, err := io.ReadAll(f)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read QuestPlusParameter file -> %w", err)
+		}
+		if err := json.Unmarshal(b, &e.QuestPlusParameterNormCDF); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal QuestPlusParameter -> %w", err)
+		}
+		experiments = append(experiments, e)
 	}
 	return experiments, nil
 }
 
 func (r *experimentRepository) ListMDDInactive(ctx context.Context) ([]*domain.ExperimentMDDData, error) {
-	experiments := []*domain.ExperimentMDDData{
-		{
-			QuestPlusParameterNormCDF: domain.QuestPlusParameterNormCDFData{
-				StimDomain: domain.StimDomainNormCDFData{
-					Intensity: []float64{1, 2, 3},
-				},
-				ParamDomain: domain.ParamDomainNormCDFData{
-					Mean:           []float64{7, 8, 9},
-					SD:             []float64{4, 5, 6},
-					LowerAsymptote: []float64{0.5},
-					LapseRate:      []float64{0.01, 0.02, 0.03},
-				},
-				OutcomeDomain: domain.OutcomeDomainData{
-					Response: []string{"correct", "incorrect"},
-				},
-				Prior: domain.PriorNormCDFData{
-					Mean:           []float64{0.32, 0.32, 0.32},
-					SD:             []float64{0.32, 0.32, 0.32},
-					LowerAsymptote: []float64{0.32},
-					LapseRate:      []float64{0.32, 0.32, 0.32},
-				},
-				Func:                  string(domain.FuncNormCDF),
-				StimScale:             string(domain.StimScaleLinear),
-				StimSelectionMethod:   string(domain.StimSelectionMethodMinEntropy),
-				ParamEstimationMethod: string(domain.ParamEstimationMethodMean),
-			},
-			Name:                     "移動方向弁別 角度",
-			Description:              "角度",
-			Azimuth:                  450,
-			Altitude:                 0,
-			CoordinateVariable:       "azimuth",
-			MovingSoundConstant:      "velocity",
-			MovingSoundConstantValue: 800,
-			NumTrials:                100,
-		},
+	rows, err := r.db.QueryxContext(ctx, `
+WITH ex AS (
+    SELECT * from experiment_mdd_detail AS ex_detail
+    INNER JOIN experiment_mdd_inactive AS ex_inactive ON ex_detail.experiment_id = ex_inactive.experiment_id
+    LEFT JOIN questplus_parameter_normcdf AS qp ON ex_detail.questplus_parameter_normcdf_id = qp.id
+)
+
+SELECT experiment_id, name, description, azimuth, altitude, coordinate_variable, moving_sound_constant, moving_sound_constant_value, num_trials, questplus_parameter_json_url
+FROM ex
+`)
+	if err != nil {
+		return nil, fmt.Errorf("failed to exec query -> %w", err)
+	}
+	defer rows.Close()
+
+	var experiments []*domain.ExperimentMDDData
+	for rows.Next() {
+		e := &domain.ExperimentMDDData{}
+		var qpParamURL string
+		//rows.Scanの代わりにrows.StructScanを使う
+		err := rows.Scan(e.Id, e.Name, e.Description, e.Azimuth, e.Altitude, e.CoordinateVariable, e.MovingSoundConstant, e.MovingSoundConstantValue, e.NumTrials, qpParamURL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan ExperimentMDDData -> %w", err)
+		}
+		f, err := os.Open(qpParamURL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open QuestPlusParameter file -> %w", err)
+		}
+		b, err := io.ReadAll(f)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read QuestPlusParameter file -> %w", err)
+		}
+		if err := json.Unmarshal(b, &e.QuestPlusParameterNormCDF); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal QuestPlusParameter -> %w", err)
+		}
+		experiments = append(experiments, e)
 	}
 	return experiments, nil
 }
