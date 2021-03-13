@@ -1,4 +1,4 @@
-package server
+package handler
 
 import (
 	"github.com/tetsuzawa/web-spat/domain"
@@ -125,14 +125,22 @@ func NewParamDomainNormCDFOAPI(v *domain.ParamDomainNormCDFData) *openapi.ParamD
 }
 
 func NewOutcomeDomainData(v *openapi.OutcomeDomain) *domain.OutcomeDomainData {
+	resp := make([]string, len(v.Response))
+	for i, x := range v.Response {
+		resp[i] = string(x)
+	}
 	return &domain.OutcomeDomainData{
-		Response: v.Response,
+		Response: resp,
 	}
 }
 
 func NewOutcomeDomainOAPI(v *domain.OutcomeDomainData) *openapi.OutcomeDomain {
+	resp := make([]openapi.Response, len(v.Response))
+	for i, x := range v.Response {
+		resp[i] = openapi.Response(x)
+	}
 	return &openapi.OutcomeDomain{
-		Response: v.Response,
+		Response: resp,
 	}
 }
 

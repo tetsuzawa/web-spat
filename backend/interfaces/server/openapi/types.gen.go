@@ -79,7 +79,7 @@ type NumTrials int64
 
 // OutcomeDomain defines model for OutcomeDomain.
 type OutcomeDomain struct {
-	Response string `json:"response"`
+	Response []Response `json:"response"`
 }
 
 // ParamDomainNormCDF defines model for ParamDomainNormCDF.

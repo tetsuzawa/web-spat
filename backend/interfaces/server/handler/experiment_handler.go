@@ -1,12 +1,10 @@
 package handler
 
 import (
-	"github.com/tetsuzawa/web-spat/interfaces/server"
 	"net/http"
 
-	"github.com/tetsuzawa/web-spat/interfaces/server/openapi"
-
 	"github.com/labstack/echo/v4"
+	"github.com/tetsuzawa/web-spat/interfaces/server/openapi"
 	"github.com/tetsuzawa/web-spat/usecase"
 )
 
@@ -25,12 +23,12 @@ func (h *ExperimentHandler) CreateExperimentMDD(ctx echo.Context) error {
 	if err := ctx.Bind(reqBody); err != nil {
 		return err
 	}
-	e := server.NewExperimentMDDData(reqBody)
+	e := NewExperimentMDDData(reqBody)
 	e, err := h.u.CreateMDD(ctx.Request().Context(), e)
 	if err != nil {
 		return err
 	}
-	respBody := server.NewExperimentMDDOAPI(e)
+	respBody := NewExperimentMDDOAPI(e)
 	return ctx.JSON(http.StatusOK, respBody)
 
 }

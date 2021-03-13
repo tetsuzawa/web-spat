@@ -284,10 +284,9 @@ components:
       type: object
       properties:
         response:
-          type: string
-          enum:
-            - 'Correct'
-            - 'Incorrect'
+          type: array
+          items:
+            $ref: '#/components/schemas/Response'
       required:
         - response
 
