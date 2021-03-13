@@ -52,18 +52,6 @@ VALUES (?)
 			return fmt.Errorf("failed to insert to `experiment_mdd_active` table -> %w", err)
 		}
 
-		stmt, err = tx.PreparexContext(ctx, `
-INSERT INTO experiment_mdd_active (experiment_id) 
-VALUES (?)
-`)
-		if err != nil {
-			return fmt.Errorf("failed to prepare statement for `experiment_mdd_active` table -> %w", err)
-		}
-		_, err = stmt.ExecContext(ctx, experimentID)
-		if err != nil {
-			return fmt.Errorf("failed to insert to `experiment_mdd_active` table -> %w", err)
-		}
-
 		b, err := json.Marshal(e.QuestPlusParameterNormCDF)
 		if err != nil {
 			return fmt.Errorf("failed to marshal QuestPlusParameterNormCDF -> %w", err)
@@ -201,8 +189,7 @@ FROM ex
 	return experiments, nil
 }
 
-
-func (r *experimentRepository)FindByID(ctx context.Context, id domain.ExperimentIdData) (*domain.ExperimentMDDData, error){
+func (r *experimentRepository) FindByID(ctx context.Context, id domain.ExperimentIdData) (*domain.ExperimentMDDData, error) {
 	row := r.db.QueryRowxContext(ctx, `
 WITH ex AS (
     SELECT * from experiment_mdd_detail AS ex_detail
@@ -213,9 +200,9 @@ WITH ex AS (
 
 SELECT experiment_id, name, description, azimuth, altitude, coordinate_variable, moving_sound_constant, moving_sound_constant_value, num_trials, questplus_parameter_json_url
 FROM ex
-`,id)
-	if row.Err()==sql.ErrNoRows{
-		return nil,nil
+`, id)
+	if row.Err() == sql.ErrNoRows {
+		return nil, nil
 	}
 
 	e := &domain.ExperimentMDDData{}
@@ -236,5 +223,63 @@ FROM ex
 		return nil, fmt.Errorf("failed to unmarshal QuestPlusParameter -> %w", err)
 	}
 	return e, nil
+
+}
+
+func (r *experimentRepository) CreateMDDResult(ctx context.Context, resData *domain.ResultMDDData) (*domain.ResultMDDData, error) {
+
+	if err := dbutil.TXHandler(r.db, func(tx *sqlx.Tx) error {
+		stmt, err := tx.PreparexContext(ctx, `
+INSERT INTO subject(sex, age, deaf_and_hearing_impaired)
+VALUES (?, ?, ?)
+`)
+		if err != nil {
+			return fmt.Errorf("failed to prepare statement for `subject` table -> %w", err)
+		}
+		res, err := stmt.ExecContext(ctx, resData.Subject.Age, resData.Subject.Sex, resData.Subject.DeafAndHearingImpaired)
+		if err != nil {
+			return fmt.Errorf("failed to insert to `subject` table -> %w", err)
+		}
+		subjectId, err := res.LastInsertId()
+		if err != nil {
+			return fmt.Errorf("failed to get last inserted ID -> %w", err)
+		}
+
+		b, err := json.Marshal(resData.ResultDetail)
+		if err != nil {
+			return fmt.Errorf("failed to marshal ResultDetail -> %w", err)
+		}
+		tmpDirPath := os.TempDir()
+		uid, err := uuid.NewRandom()
+		if err != nil {
+			return fmt.Errorf("failed to generate uuid -> %w", err)
+		}
+		resultDetailPath := tmpDirPath + "result_detail_" + uid.String() + ".json"
+		f, err := os.Create(resultDetailPath)
+		if err != nil {
+			return fmt.Errorf("failed to create result detail to json file -> %w", err)
+		}
+		defer f.Close()
+		if _, err := f.Write(b); err != nil {
+			return fmt.Errorf("failed to write result detail to json file -> %w", err)
+		}
+
+		stmt, err = tx.PreparexContext(ctx, `
+INSERT INTO result_mdd (experiment_id, result_url, subject_id, mean, sd, lower_asymptote, lapse_rate) 
+VALUES (?, ?, ?, ?, ?, ?)
+`)
+		if err != nil {
+			return fmt.Errorf("failed to prepare statement for `result_mdd` table -> %w", err)
+		}
+		_, err = stmt.ExecContext(ctx, resData.ExperimentMDD.Id, resultDetailPath, subjectId, resData.Mean, resData.Sd, resData.LowerAsymptote, resData.LapseRate)
+		if err != nil {
+			return fmt.Errorf("failed to insert to `result_mdd` table -> %w", err)
+		}
+		return nil
+
+	}); err != nil {
+		return nil, fmt.Errorf("failed to exec in the transaction -> %w", err)
+	}
+	return resData, nil
 
 }

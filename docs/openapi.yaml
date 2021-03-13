@@ -100,7 +100,7 @@ paths:
 
   /experiment/mdd/{id}/results:
     post:
-      operationId: registerResultOfExperimentMDDById
+      operationId: registerExperimentMDDResultById
       summary: Register the result of the specified experiment ID.
       description: Register the result of the specified experiment ID. The experimet type is Movement Direction Discrimination.
       parameters:
@@ -475,10 +475,10 @@ components:
     Sex:
       type: string
       enum:
-        - 'not known'
-        - 'male'
-        - 'female'
-        - 'not applicable'
+        - '0'
+        - '1'
+        - '2'
+        - '9'
       description: >
         '0: not known, 1: male, 2: female, 9: not applicable. ISO 5218'
 

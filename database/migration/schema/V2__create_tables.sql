@@ -60,10 +60,10 @@ CREATE TABLE IF NOT EXISTS `questplus_parameter_normcdf`
 CREATE TABLE IF NOT EXISTS `subject`
 (
     `id`                        INT PRIMARY KEY,
-    `sex`                       CHAR(1)      NOT NULL DEFAULT '0' COMMENT 'ISO5218',
-    `age`                       INT UNSIGNED NOT NULL,
-    `deaf_and_hearing_impaired` BOOL         NOT NULL,
-    `created_at`                TIMESTAMP    NOT NULL DEFAULT (now())
+    `sex`                       ENUM ('0', '1', '2', '3') NOT NULL COMMENT 'ISO5218',
+    `age`                       INT UNSIGNED              NOT NULL,
+    `deaf_and_hearing_impaired` BOOL                      NOT NULL,
+    `created_at`                TIMESTAMP                 NOT NULL DEFAULT (now())
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 

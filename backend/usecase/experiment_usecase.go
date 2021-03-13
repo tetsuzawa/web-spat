@@ -14,6 +14,7 @@ type IExperimentUseCase interface {
 	ListMDDActive(ctx context.Context) ([]*domain.ExperimentMDDData, error)
 	ListMDDInactive(ctx context.Context) ([]*domain.ExperimentMDDData, error)
 	FindMDDById(ctx context.Context, id domain.ExperimentIdData) (*domain.ExperimentMDDData, error)
+	CreateMDDResult(ctx context.Context, r *domain.ResultMDDData) (*domain.ResultMDDData, error)
 }
 
 type experimentUseCase struct {
@@ -59,4 +60,16 @@ func (u *experimentUseCase) FindMDDById(ctx context.Context, id domain.Experimen
 		return nil, fmt.Errorf("repositoy error -> %w", err)
 	}
 	return experimentMDD, nil
+}
+func (u *experimentUseCase) CreateMDDResult(ctx context.Context, r *domain.ResultMDDData) (*domain.ResultMDDData, error) {
+	experimentService := domain.NewExperimentService()
+	err := experimentService.ValidateResultMDDData(r)
+	if err != nil {
+		return nil, fmt.Errorf("domain error -> %w", err)
+	}
+	r, err = u.r.CreateMDDResult(ctx, r)
+	if err != nil {
+		return nil, fmt.Errorf("repository error -> %w", err)
+	}
+	return r, nil
 }
