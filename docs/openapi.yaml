@@ -100,7 +100,7 @@ paths:
 
   /experiment/mdd/{id}/results:
     post:
-      operationId: registerResultOfExperimentMDDById
+      operationId: registerExperimentMDDResultById
       summary: Register the result of the specified experiment ID.
       description: Register the result of the specified experiment ID. The experimet type is Movement Direction Discrimination.
       parameters:

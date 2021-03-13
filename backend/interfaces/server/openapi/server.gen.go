@@ -27,7 +27,7 @@ type ServerInterface interface {
 	GetExperimentMDDById(ctx echo.Context, id ExperimentId) error
 	// Register the result of the specified experiment ID.
 	// (POST /experiment/mdd/{id}/results)
-	RegisterResultOfExperimentMDDById(ctx echo.Context, id ExperimentId) error
+	RegisterExperimentMDDResultById(ctx echo.Context, id ExperimentId) error
 	// Returns "OK"
 	// (GET /ping)
 	Ping(ctx echo.Context) error
@@ -81,8 +81,8 @@ func (w *ServerInterfaceWrapper) GetExperimentMDDById(ctx echo.Context) error {
 	return err
 }
 
-// RegisterResultOfExperimentMDDById converts echo context to params.
-func (w *ServerInterfaceWrapper) RegisterResultOfExperimentMDDById(ctx echo.Context) error {
+// RegisterExperimentMDDResultById converts echo context to params.
+func (w *ServerInterfaceWrapper) RegisterExperimentMDDResultById(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id ExperimentId
@@ -93,7 +93,7 @@ func (w *ServerInterfaceWrapper) RegisterResultOfExperimentMDDById(ctx echo.Cont
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.RegisterResultOfExperimentMDDById(ctx, id)
+	err = w.Handler.RegisterExperimentMDDResultById(ctx, id)
 	return err
 }
 
@@ -138,7 +138,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/experiment/mdd/active", wrapper.ListExperimentsMDDActive)
 	router.GET(baseURL+"/experiment/mdd/inactive", wrapper.ListExperimentsMDDInactive)
 	router.GET(baseURL+"/experiment/mdd/:id", wrapper.GetExperimentMDDById)
-	router.POST(baseURL+"/experiment/mdd/:id/results", wrapper.RegisterResultOfExperimentMDDById)
+	router.POST(baseURL+"/experiment/mdd/:id/results", wrapper.RegisterExperimentMDDResultById)
 	router.GET(baseURL+"/ping", wrapper.Ping)
 
 }
+
