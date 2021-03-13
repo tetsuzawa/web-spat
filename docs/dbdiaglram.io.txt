@@ -152,9 +152,16 @@ Table questplus_parameter_normcdf {
 //   created_at timestamp [not null, default: `now()`]
 // }
 
+enum sex {
+  0
+  1
+  2
+  9
+}
+
 Table subject {
   id int [pk]
-  sex char(1) [not null, default: '0', note: 'ISO5218']
+  sex sex [not null, default: '0', note: 'ISO5218']
   age int [not null]
   deaf_and_hearing_impaired bool [not null]
   created_at timestamp [not null, default: `now()`]

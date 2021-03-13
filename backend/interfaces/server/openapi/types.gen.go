@@ -209,10 +209,8 @@ type Sex string
 
 // List of Sex
 const (
-	Sex_female         Sex = "female"
-	Sex_male           Sex = "male"
-	Sex_not_applicable Sex = "not applicable"
-	Sex_not_known      Sex = "not known"
+	Sex__  Sex = "0"
+	Sex__1 Sex = "9"
 )
 
 // StimDomainNormCDF defines model for StimDomainNormCDF.
@@ -246,4 +244,3 @@ type CreateExperimentMDDJSONRequestBody CreateExperimentMDDJSONBody
 
 // RegisterExperimentMDDResultByIdJSONRequestBody defines body for RegisterExperimentMDDResultById for application/json ContentType.
 type RegisterExperimentMDDResultByIdJSONRequestBody RegisterExperimentMDDResultByIdJSONBody
-
