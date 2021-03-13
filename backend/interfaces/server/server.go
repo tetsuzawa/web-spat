@@ -31,7 +31,7 @@ func Run(port int) {
 
 	// routing
 	h := handler.NewIntegratedHandler(
-		*handler.NewExperimentsHandler(usecase.NewExperimentUseCase(persistence_mock.NewExperimentRepository())),
+		*handler.NewExperimentsHandler(usecase.NewExperimentUseCase(persistence_mock.NewExperimentRepository(db))),
 		*handler.NewUtilHandler(),
 	)
 
