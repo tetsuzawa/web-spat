@@ -6,8 +6,9 @@ import questplus as qp
 
 
 def handler(event, context):
+    print("event", event)
+    print("context", context)
     arg = json.load(event)
-    print(arg)
 
     # Initialize the QUEST+ staircase.
     q = qp.QuestPlus(**arg["qp_params"])
@@ -20,5 +21,3 @@ def handler(event, context):
         q.update(stim=dict(intensity=float(stim / 10)), outcome=dict(response=response))
 
     return json.dump(dict(next_stim=q.next_stim["intensity"]))
-
-
